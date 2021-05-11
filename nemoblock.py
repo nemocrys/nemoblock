@@ -58,10 +58,17 @@ class Mesh:
             f.write(");\n\n")
             f.write("edges\n(\n")
             for e in self.edges:
-                f.write(f"    {e.type} {e.p0.id} {e.p1.id} (")
-                for p in e.points:
-                    f.write(f" ({p[0]} {p[1]} {p[2]}) ")
-                f.write(")\n")
+                if e.type == "line":
+                    pass
+                elif e.type == "arc":
+                    f.write(f"    {e.type} {e.p0.id} {e.p1.id} (")
+                    f.write(f"{e.points[0][0]} {e.points[0][1]} {e.points[0][2]}")
+                    f.write(")\n")
+                else:
+                    f.write(f"    {e.type} {e.p0.id} {e.p1.id} (")
+                    for p in e.points:
+                        f.write(f" ({p[0]} {p[1]} {p[2]}) ")
+                    f.write(")\n")
             f.write(");\n\n")
             f.write("blocks\n(\n")
             for b in self.blocks:

@@ -5,9 +5,9 @@ from nemoblock import *
 mesh = Mesh()
 
 # create patches for boundary, inlet, outlet
-inlet = Patch(mesh, 'inlet')
-outlet = Patch(mesh, 'outlet')
-wall = Patch(mesh, 'wall')
+inlet = Patch(mesh, 'inlet inlet')
+outlet = Patch(mesh, 'outlet outlet')
+wall = Patch(mesh, 'wall boundary')
 
 # create first block with points
 b1 = Block(mesh, [0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0 , 1], [1, 1, 1], [0, 1, 1])

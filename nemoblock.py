@@ -116,7 +116,7 @@ class Block:
         self._cells_x0 = 0
         self._cells_x1 = 0
         self._cells_x2 = 0
-        self.grading = "simpleGrading (1 2 3)"
+        self.grading = "simpleGrading (1 1 1)"
 
         self._p0 = None
         self._p1 = None
@@ -226,8 +226,8 @@ class Block:
             self.e2 = other.e1
             self.e6 = other.e5
             self.e7 = other.e4
-            self.cells_x0 = other.cells_x0
-            self.cells_x1 = other.cells_x1
+            self._cells_x0 = other.cells_x0
+            self._cells_x1 = other.cells_x1
         elif pos == "bottom":
             self._p0 = other._p4
             self._p1 = other._p5
@@ -237,8 +237,8 @@ class Block:
             self.e1 = other.e2
             self.e5 = other.e6
             self.e4 = other.e7
-            self.cells_x0 = other.cells_x0
-            self.cells_x1 = other.cells_x1
+            self._cells_x0 = other.cells_x0
+            self._cells_x1 = other.cells_x1
         elif pos == "left":
             self._p0 = other._p1
             self._p3 = other._p2
@@ -248,8 +248,8 @@ class Block:
             self.e7 = other.e6
             self.e8 = other.e9
             self.e11 = other.e10
-            self.cells_x1 = other.cells_x1
-            self.cells_x2 = other.cells_x2
+            self._cells_x1 = other.cells_x1
+            self._cells_x2 = other.cells_x2
         elif pos == "right":
             self._p1 = other._p0
             self._p2 = other._p3
@@ -259,8 +259,8 @@ class Block:
             self.e6 = other.e7
             self.e9 = other.e8
             self.e10 = other.e11
-            self.cells_x1 = other.cells_x1
-            self.cells_x2 = other.cells_x2
+            self._cells_x1 = other.cells_x1
+            self._cells_x2 = other.cells_x2
         elif pos == "front":
             self._p0 = other._p3
             self._p1 = other._p2
@@ -270,8 +270,8 @@ class Block:
             self.e3 = other.e2
             self.e8 = other.e11
             self.e9 = other.e10
-            self.cells_x0 = other.cells_x0
-            self.cells_x2 = other.cells_x2
+            self._cells_x0 = other.cells_x0
+            self._cells_x2 = other.cells_x2
         elif pos == "back":
             self._p3 = other._p0
             self._p2 = other._p1
@@ -281,14 +281,14 @@ class Block:
             self.e2 = other.e3
             self.e11 = other.e8
             self.e10 = other.e9
-            self.cells_x0 = other.cells_x0
-            self.cells_x2 = other.cells_x2
+            self._cells_x0 = other.cells_x0
+            self._cells_x2 = other.cells_x2
         else:
             raise ValueError("This position does not exist.\nThe following values are allowed for 'pos': top, bottom, left, right, front, back")
 
     def set_number_of_cell(self, x0=10, x1=10, x2=10):
-        if self._cells_x0 != 0 or self._cells_x1 != 0 or self.cells_x2 != 0:
-            raise RuntimeError("Values were already set or derived from a connected block.")
+        # if self._cells_x0 != 0 or self._cells_x1 != 0 or self.cells_x2 != 0:
+        #     raise RuntimeError("Values were already set or derived from a connected block.")
         self._cells_x0 = x0
         self._cells_x1 = x1
         self._cells_x2 = x2
@@ -567,3 +567,73 @@ class Patch:
     def add_face(self, face):
         self._faces.append(face)
 
+
+def cartesian(r, phi, z, degree=True):
+    if degree:
+        phi = 2*np.pi * phi / 360
+    x = r * np.cos(phi)
+    y = r * np.sin(phi)
+    return [x, y, z]
+
+
+def create_cylinder(mesh, r, h, res_axial, res_radial):
+    # Central blocks
+    radius_sides = r / 2
+    radius_middle = 1.15 * radius_sides
+
+    res_center_r = int(res_radial / 2)
+    b_center_0 = Block(
+        mesh,
+        cartesian(radius_sides, 0, 0),
+        cartesian(radius_middle, 45, 0),
+        cartesian(radius_sides, 90, 0),
+        cartesian(0, 0, 0),
+        cartesian(radius_sides, 0, h),
+        cartesian(radius_middle, 45, h),
+        cartesian(radius_sides, 90, h),
+        cartesian(0, 0, h)
+    )
+    b_center_0.set_number_of_cell(res_center_r, res_center_r, res_axial)
+    b_center_0.create()
+
+    b_center_90 = Block(mesh)
+    b_center_90.set_connection(b_center_0, "front")
+    b_center_90.p2 = cartesian(radius_middle, 135, 0)
+    b_center_90.p3 = cartesian(radius_sides, 180, 0)
+    b_center_90.p6 = cartesian(radius_middle, 135, h)
+    b_center_90.p7 = cartesian(radius_sides, 180, h)
+    b_center_90.cells_x1 = res_radial
+    b_center_90.create()
+
+    b_center_180 = Block(mesh)
+    b_center_180.set_connection(b_center_90, "right")
+    b_center_180.p0 = cartesian(radius_sides, 270, 0)
+    b_center_180.p3 = cartesian(radius_middle, 225, 0)
+    b_center_180.p4 = cartesian(radius_sides, 270, h)
+    b_center_180.p7 = cartesian(radius_middle, 225, h)
+    b_center_180.cells_x0 = res_radial
+    b_center_180.create()
+
+    b_center_270 = Block(mesh)
+    b_center_270.set_connection(b_center_180, "back")
+    b_center_270.set_connection(b_center_0, "right")
+    b_center_270.p0 = cartesian(radius_middle, 315, 0)
+    b_center_270.p4 = cartesian(radius_middle, 315, h)
+    b_center_270.create()
+
+    top_surface = [b_center_0.face_top, b_center_90.face_top, b_center_180.face_top, b_center_270.face_top]
+    bt_surface = [b_center_0.face_bottom, b_center_90.face_bottom, b_center_180.face_bottom, b_center_270.face_bottom]
+
+
+def create_ring(r_out, divisions, faces_inside, res_axial, res_radial,faces_top=[], faces_bottom=[]):
+    
+    blocks = []
+    b0 = Block()
+    blocks.append(b0)
+
+    for i in range(100000):
+        pass
+    b_last = Block()
+
+    blocks.append(b_last)
+    return blocks

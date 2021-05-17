@@ -12,7 +12,7 @@ wall = Patch(mesh, 'wall boundary')
 # create first block with points
 b1 = Block(mesh, [0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0 , 1], [1, 1, 1], [0, 1, 1])
 b1.set_number_of_cell(10, 10, 10)
-b1.grading = f"simpleGrading (1 2 3)"  # This is the default. The string is directly written into the blockMeshDict.
+b1.grading = f"simpleGrading (1 1 1)"  # This is the default. The string is directly written into the blockMeshDict.
 b1.create()  # this creates points & edges
 
 # modify edges

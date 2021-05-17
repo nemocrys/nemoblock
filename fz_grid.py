@@ -55,8 +55,8 @@ r_c1_top = 0.1
 z_c1_top = 0.3
 z_c1_top_mid = z_c1_top
 
-s1_c1 = [[0.01, -0.003], [0.02, -0.003], [0.03, -0.002], [0.04, 0]]
-s2_c1 = [[0.075, -0.01]]
+s1_c1 = [[0.01, -0.01], [0.02, -0.03], [0.03, -0.02], [0.04, -0.01]]
+s2_c1 = [[0.075, 0.01]]
 
 # ring r1
 r_r1_bt = 0.25
@@ -75,7 +75,7 @@ z_r2_top = 0.4
 # Mesh parameters
 res_phi = 180  # 2° angle
 
-res_r_c1 = 50  # applies also for c2
+res_r_c1 = 20  # applies also for c2
 res_z_c1 = 10  # applies also for r1, r2
 
 res_r_r1 = 50  # applies also fro r3
@@ -92,7 +92,7 @@ free_surf = Patch(mesh, "wall FreeSurf")
 # Central cylinder
 c1 = create_cylinder(mesh, r_c1_top, r_c1_bt, z_c1_top, z_c1_bt, z_c1_top_mid, z_c1_bt_mid, res_r_c1, res_phi, res_z_c1, s_in_bt=s1_c1, s_out_bt=s2_c1)
 
-r1 = create_ring(mesh, r_r1_top, r_r1_bt, z_r1_top, z_r1_bt, c1.surf_rad, res_r_r1, res_phi, res_z_c1)
+# r1 = create_ring(mesh, r_r1_top, r_r1_bt, z_r1_top, z_r1_bt, c1.surf_rad, res_r_r1, res_phi, res_z_c1)
 
 # r2 = create_ring(mesh, r_r2_top, r_r2_bt, z_r2_top, z_r2_bt, r1.surf_rad, res_r_r2, res_phi, res_z_c1)
 

@@ -5,15 +5,82 @@ mesh = Mesh()
 
 
 ####################
-# Geometry parameters (origin of coordinate system in bottom of melt)
-r_top = 0.1  # radius feed rod
-r_bt = 0.3  # radius crystal
-h_axis = 0.5  # height of floating zone
+# fmt: off
+#
+# Mes structure (left: symmetry axis)
+#  __
+# |  | \
+# |  |    \
+# |c2| r3 / \
+# |__|___/    \
+# |  |   \ r2 /
+# |c1| r1 \  /
+# |__|_____\/
+# 
+#
+# coordinate system:
+#
+# ^ z-direction
+# | 
+# |
+# |------->
+#   r-direction 
+#  
+# fmt: on
+#
+####################
+# Geometry parameter
+####################
+# cylinder c1
+#
+# fmt: off
+#            z_c1_bt_mid
+#  --------- r_c1_top/2 ---------   r_c1_top, z_c1_top
+#  _____________ __________________ 
+# |             |                  |
+# |        cylinder c1             |
+# |_____________|__________________|
+#  ----s1-- r_c1_bt/2  ----s2----   r_c1_bt, z_c1_bt
+#           z_c1_bt_mid
+# fmt: on
+# 
+# This cylinder consists of a octagonal core ranging from radius 0 to r/2 and a surronding ring from r/2 to r.
+# The bottom surface can be given in form of a spline defined by [r, z] points for the lines s1 (inner part) and s2 (outer part).
+
+r_c1_bt = 0.1
+z_c1_bt = 0.0
+z_c1_bt_mid = 0.0
+
+r_c1_top = 0.1
+z_c1_top = 0.3
+z_c1_top_mid = z_c1_top
+
+s1_c1 = [[0.01, -0.003], [0.02, -0.003], [0.03, -0.002], [0.04, 0]]
+s2_c1 = [[0.075, -0.01]]
+
+# ring r1
+r_r1_bt = 0.25
+r_r1_top = 0.2
+z_r1_bt = 0.05
+z_r1_top = z_c1_top
+
+# ring r2
+r_r2_bt = 0.5  # crystal diameter (FZ)
+r_r2_top = 0.25
+z_r2_bt = z_c1_top
+z_r2_top = 0.4
+
 
 ####################
 # Mesh parameters
-factor = 1
+res_phi = 180  # 2° angle
 
+res_r_c1 = 50  # applies also for c2
+res_z_c1 = 10  # applies also for r1, r2
+
+res_r_r1 = 50  # applies also fro r3
+
+res_r_r2 = 50  # applies also for r3, c2 
 
 ####################
 # Patches
@@ -23,75 +90,14 @@ free_surf = Patch(mesh, "wall FreeSurf")
 
 ####################
 # Central cylinder
-radius_sides = r_top / 2
-radius_middle = 1.15 * radius_sides
+c1 = create_cylinder(mesh, r_c1_top, r_c1_bt, z_c1_top, z_c1_bt, z_c1_top_mid, z_c1_bt_mid, res_r_c1, res_phi, res_z_c1, s_in_bt=s1_c1, s_out_bt=s2_c1)
 
-cells_center_r = factor * 10
-cells_center_h = factor * 10
-b_center_0 = Block(
-    mesh,
-    cartesian(radius_sides, 0, 0),
-    cartesian(radius_middle, 45, 0),
-    cartesian(radius_sides, 90, 0),
-    cartesian(0, 0, 0),
-    cartesian(radius_sides, 0, h_axis),
-    cartesian(radius_middle, 45, h_axis),
-    cartesian(radius_sides, 90, h_axis),
-    cartesian(0, 0, h_axis)
-)
-b_center_0.set_number_of_cell(cells_center_r, cells_center_r, cells_center_h)
-b_center_0.create()
+r1 = create_ring(mesh, r_r1_top, r_r1_bt, z_r1_top, z_r1_bt, c1.surf_rad, res_r_r1, res_phi, res_z_c1)
 
-b_center_90 = Block(mesh)
-b_center_90.set_connection(b_center_0, "front")
-b_center_90.p2 = cartesian(radius_middle, 135, 0)
-b_center_90.p3 = cartesian(radius_sides, 180, 0)
-b_center_90.p6 = cartesian(radius_middle, 135, h_axis)
-b_center_90.p7 = cartesian(radius_sides, 180, h_axis)
-b_center_90.cells_x1 = cells_center_r
-b_center_90.create()
+# r2 = create_ring(mesh, r_r2_top, r_r2_bt, z_r2_top, z_r2_bt, r1.surf_rad, res_r_r2, res_phi, res_z_c1)
 
-b_center_180 = Block(mesh)
-b_center_180.set_connection(b_center_90, "right")
-b_center_180.p0 = cartesian(radius_sides, 270, 0)
-b_center_180.p3 = cartesian(radius_middle, 225, 0)
-b_center_180.p4 = cartesian(radius_sides, 270, h_axis)
-b_center_180.p7 = cartesian(radius_middle, 225, h_axis)
-b_center_180.cells_x0 = cells_center_r
-b_center_180.create()
+# c2 = create_cylinder_on_top()
 
-b_center_270 = Block(mesh)
-b_center_270.set_connection(b_center_180, "back")
-b_center_270.set_connection(b_center_0, "right")
-b_center_270.p0 = cartesian(radius_middle, 315, 0)
-b_center_270.p4 = cartesian(radius_middle, 315, h_axis)
-b_center_270.create()
-
-top_surf.add_face(b_center_0.face_top)
-top_surf.add_face(b_center_90.face_top)
-top_surf.add_face(b_center_180.face_top)
-top_surf.add_face(b_center_270.face_top)
-bt_surf.add_face(b_center_0.face_bottom)
-bt_surf.add_face(b_center_90.face_bottom)
-bt_surf.add_face(b_center_180.face_bottom)
-bt_surf.add_face(b_center_270.face_bottom)
-
-####################
-# Central ring
-
-cells_cring = factor * 10
-
-b_cring_0 = Block(mesh)
-b_cring_0.set_connection(b_center_0, "back")
-b_cring_0.p0 = cartesian(r_top, 0, 0)
-b_cring_0.p1 = cartesian(r_top, 45, 0)
-b_cring_0.p4 = cartesian(r_top, 0, h_axis)
-b_cring_0.p5 = cartesian(r_top, 45, h_axis)
-b_cring_0.cells_x1 = cells_cring
-b_cring_0.create()
-b_cring_0.e0.type = "arc"
-b_cring_0.e0.points.append(cartesian(r_top, 22.5, 0))
-b_cring_0.e3.type = "arc"
-b_cring_0.e3.points.append(cartesian(r_top,22.5, h_axis))
+# c3 = create_ring_in_between()
 
 mesh.write()

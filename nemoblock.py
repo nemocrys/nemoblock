@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import numpy as np
 import os
-
+import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
 
@@ -81,7 +81,7 @@ class Mesh:
             f.write("patches\n(\n")
             for p in self.patches:
                 f.write(f"    {p.name}\n    (\n")
-                for face in p._faces:
+                for face in p.faces:
                     f.write(f"    ({face[0].id} {face[1].id} {face[2].id} {face[3].id})\n")
                 f.write("    )\n")
             f.write(");\n\n")
@@ -553,6 +553,13 @@ class Block:
             raise RuntimeError("This block was not created yet.")
         return [self._p1, self._p2, self._p6, self._p5]
 
+    @face_right.setter
+    def face_right(self, val):
+        self._p2 = val[0]
+        self._p1 = val[1]
+        self._p5 = val[2]
+        self._p6 = val[3]
+
     @property
     def face_bottom(self):
         if not self._created:
@@ -563,7 +570,7 @@ class Block:
     def face_top(self):
         if not self._created:
             raise RuntimeError("This block was not created yet.")
-        return [self._p5, self._p6, self._p7, self._p4]
+        return [self._p7, self._p4, self._p5, self._p6]
 
 
 @dataclass
@@ -584,11 +591,11 @@ class Edge:
 class Patch:
     def __init__(self, mesh, name) -> None:
         self.name = name
-        self._faces = []
+        self.faces = []
         mesh.patches.append(self)
 
     def add_face(self, face):
-        self._faces.append(face)
+        self.faces.append(face)
 
 @dataclass
 class Ring:
@@ -599,8 +606,8 @@ class Ring:
 
 @dataclass
 class Cylinder:
-    inner_block: Block
-    outer_ring: Ring
+    core: Block
+    ring: Ring
     surf_top: list
     surf_bt: list
     surf_rad: list
@@ -614,93 +621,214 @@ def cartesian(r, phi, z, degree=True):
     return [x, y, z]
 
 
-def create_cylinder(mesh, r_top, r_bt, z_top, z_bt, z_top_mid, z_bt_mid, res_r, res_phi, res_z, s_in_top=[], s_in_bt=[], s_out_top=[], s_out_bt=[]):
+def spline(points, kind='cubic'):
+    """Create a spline functions
+
+    Args:
+        points (list): list of [r, z] coordinates
+    """
+    points = np.array(points)
+    return interp1d(points[:, 0], points[:, 1], kind=kind)
+
+def plot_spline(sp, r, fig=None, ax=None):
+    if fig is None:
+        fig, ax = plt.subplots(1, 1)
+    r = np.linspace(r[0], r[1], 100)
+    ax.plot(r, sp(r))
+    return fig, ax
+
+
+
+
+def create_cylinder(mesh, r_top, r_bt, z_top, z_bt, res_r, res_phi, res_z, radius_ratio=0.5, spline_res=100, cylinder_below=None, cylinder_on_top=None):
+    if cylinder_below is not None and cylinder_on_top is not None:
+        raise ValueError("Both cylinder on top and below is not possible.")
+    
     # Central block
-    radius_center_top = r_top / 2
-    radius_center_bt = r_bt / 2
+    radius_center_top = r_top * radius_ratio
+    radius_center_bt = r_bt * radius_ratio
+
+    if type(z_bt) is interp1d:
+        z_bt_mid = z_bt(radius_center_bt)
+    else:
+        z_bt_mid = z_bt
+    if type(z_top) is interp1d:
+        z_top_mid = z_top(radius_center_top)
+    else:
+        z_top_mid = z_top
 
     res_center_r = int(res_phi / 4)
-    b = Block(
-        mesh,
-        cartesian(radius_center_bt, 0, z_bt_mid),
-        cartesian(radius_center_bt, 90, z_bt_mid),
-        cartesian(radius_center_bt, 180, z_bt_mid),
-        cartesian(radius_center_bt, 270, z_bt_mid),
-        cartesian(radius_center_top, 0, z_top_mid),
-        cartesian(radius_center_top, 90, z_top_mid),
-        cartesian(radius_center_top, 180, z_top_mid),
-        cartesian(radius_center_bt, 270, z_top_mid)
-    )
+
+    if cylinder_below is not None:
+        b = Block(mesh)
+        b.set_connection(cylinder_below.core, 'bottom')
+        b.p4 = cartesian(radius_center_top, 0, z_top_mid)
+        b.p5 = cartesian(radius_center_top, 90, z_top_mid)
+        b.p6 = cartesian(radius_center_top, 180, z_top_mid)
+        b.p7 = cartesian(radius_center_top, 270, z_top_mid)
+    elif cylinder_on_top is not None:
+        b = Block(mesh)
+        b.set_connection(cylinder_on_top.core, 'top')
+        b.p0 = cartesian(radius_center_bt, 0, z_bt_mid)
+        b.p1 = cartesian(radius_center_bt, 90, z_bt_mid)
+        b.p2 = cartesian(radius_center_bt, 180, z_bt_mid)
+        b.p3 = cartesian(radius_center_bt, 270, z_bt_mid)
+    else:
+        b = Block(
+            mesh,
+            cartesian(radius_center_bt, 0, z_bt_mid),
+            cartesian(radius_center_bt, 90, z_bt_mid),
+            cartesian(radius_center_bt, 180, z_bt_mid),
+            cartesian(radius_center_bt, 270, z_bt_mid),
+            cartesian(radius_center_top, 0, z_top_mid),
+            cartesian(radius_center_top, 90, z_top_mid),
+            cartesian(radius_center_top, 180, z_top_mid),
+            cartesian(radius_center_top, 270, z_top_mid)
+        )
     b.set_number_of_cell(res_center_r, res_center_r, res_z)
     b.create()
 
-    #############
-    # SPLINE INTERPOTALTION
-    x0 = np.array(cartesian(radius_center_bt, 0, z_bt_mid))
-    x1 = np.array(cartesian(radius_center_bt, 90, z_bt_mid))
+    # Spline on bottom edges
+    if type(z_bt) is interp1d:
+        x0 = np.array(cartesian(radius_center_bt, 0, z_bt_mid))
+        x1 = np.array(cartesian(radius_center_bt, 90, z_bt_mid))
+        radii = []
+        phis = []
+        for dist in np.linspace(0, 1, spline_res, endpoint=False):
+            pos = x0 + dist*(x1-x0)
+            radii.append((pos[0]**2 + pos[1]**2)**0.5)
+            phis.append(np.arctan(pos[1]/pos[0])*360/(2*np.pi))
+        z_vals = z_bt(radii)
+        
+        b.e0.type = "spline"
+        b.e5.type = "spline"
+        b.e1.type = "spline"
+        b.e4.type = "spline"
+        for i in range(len(radii) - 1):
+            b.e0.points.append(cartesian(radii[i+1], phis[i+1], z_vals[i+1]))
+            b.e5.points.append(cartesian(radii[i+1], phis[i+1] + 90, z_vals[i+1]))
+            b.e1.points.append(cartesian(radii[i+1], 270 - phis[i+1], z_vals[i+1]))
+            b.e4.points.append(cartesian(radii[i+1], 360 - phis[i+1], z_vals[i+1]))
 
-    radii = []
-    phis = []
-    for dist in np.linspace(0, 1, res_center_r, endpoint=False):
-        pos = x0 + dist*(x1-x0)
-        radii.append((pos[0]**2 + pos[1]**2)**0.5)
-        phis.append(np.arctan(pos[1]/pos[0])*360/(2*np.pi))
-    s_in_bt_reverse = [ [-s_in_bt[-(i+1)][0], s_in_bt[-(i+1)][1]] for i in range(len(s_in_bt))]
-    s_in_bt_full = np.array([[-radius_center_bt, z_bt_mid]] + s_in_bt_reverse+ [[0, 0]] + s_in_bt + [[radius_center_bt, z_bt_mid]])
-    spline = interp1d(s_in_bt_full[:, 0], s_in_bt_full[:, 1], kind='cubic')
-    z_vals = spline(radii)
-    
-    b.e0.type = "spline"
-    b.e5.type = "spline"
-    b.e1.type = "spline"
-    b.e4.type = "spline"
-    for i in range(len(radii) - 1):
-        b.e0.points.append(cartesian(radii[i+1], phis[i+1], z_vals[i+1]))
-        b.e5.points.append(cartesian(radii[i+1], phis[i+1] + 90, z_vals[i+1]))
-        b.e1.points.append(cartesian(radii[i+1], 270 - phis[i+1], z_vals[i+1]))
-        b.e4.points.append(cartesian(radii[i+1], 360 - phis[i+1], z_vals[i+1]))
+    if type(z_top) is interp1d:
+        x0 = np.array(cartesian(radius_center_bt, 0, z_top_mid))
+        x1 = np.array(cartesian(radius_center_bt, 90, z_top_mid))
+        radii = []
+        phis = []
+        for dist in np.linspace(0, 1, spline_res, endpoint=False):
+            pos = x0 + dist*(x1-x0)
+            radii.append((pos[0]**2 + pos[1]**2)**0.5)
+            phis.append(np.arctan(pos[1]/pos[0])*360/(2*np.pi))
+        z_vals = z_top(radii)
+
+        b.e3.type = "spline"
+        b.e6.type = "spline"
+        b.e2.type = "spline"
+        b.e7.type = "spline"
+
+        for i in range(len(radii) - 1):
+            b.e3.points.append(cartesian(radii[i+1], phis[i+1], z_vals[i+1]))
+            b.e6.points.append(cartesian(radii[i+1], phis[i+1] + 90, z_vals[i+1]))
+            b.e2.points.append(cartesian(radii[i+1], 270 - phis[i+1], z_vals[i+1]))
+            b.e7.points.append(cartesian(radii[i+1], 360 - phis[i+1], z_vals[i+1]))
 
     # create ring around these blocks
-
-    ring = create_ring(mesh, r_top, r_bt, z_top, z_bt, [b.face_front, b.face_right, b.face_back, b.face_left], res_r, res_phi, res_z)
+    ring_below = None
+    ring_on_top = None
+    if cylinder_below is not None:
+        ring_below = cylinder_below.ring
+    if cylinder_on_top is not None:
+        ring_on_top = cylinder_on_top.ring
+    ring = create_ring(mesh, r_top, radius_center_top, r_bt, radius_center_bt, z_top, z_bt, [b.face_front, b.face_right, b.face_back, b.face_left], res_r, res_phi, res_z, spline_res, ring_below=ring_below, ring_on_top=ring_on_top)
     surf_top = [b.face_top] + ring.surf_top
     surf_bt = [b.face_bottom] + ring.surf_bt
 
     return Cylinder(b, ring, surf_top, surf_bt, ring.surf_rad)
 
 
-def create_ring(mesh, r_top, r_bt, z_top, z_bt, faces_inside, res_r, res_phi, res_z):
+def create_ring(mesh, r_top, r_in_top, r_bt, r_in_bt, z_top, z_bt, faces_inside, res_r, res_phi, res_z, spline_res=100, spline_outside=None, ring_below=None, ring_on_top=None, faces_outside=[]):
     
+    if ring_below is not None and ring_on_top is not None:
+        raise ValueError("It's not allowed to provide both ring_on_top and ring_below.")
+
+    if type(z_bt) is interp1d:
+        z_bt_out = z_bt(r_bt)
+    else:
+        z_bt_out = z_bt
+    if type(z_top) is interp1d:
+        z_top_out = z_top(r_top)
+    else:
+        z_top_out = z_top
+
     blocks = []
     
     b = Block(mesh)
     b.face_left = faces_inside[0]
-    b.p1 = cartesian(r_bt, 0, z_bt)
-    b.p2 = cartesian(r_bt, 90, z_bt)
-    b.p5 = cartesian(r_top, 0, z_top)
-    b.p6 = cartesian(r_top, 90, z_top)
-    b.set_number_of_cell(res_r, int(res_phi/4), res_z)
-    b.create()
-    b.e5.type = "arc"
-    b.e5.points = [cartesian(r_bt, 45, z_bt)]
-    b.e6.type = "arc"
-    b.e6.points = [cartesian(r_top, 45, z_top)]
+    if faces_outside != []:
+        b.face_right = faces_outside[0]
+        b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+        b.create()
+    elif ring_below is not None:
+        b.set_connection(ring_below.blocks[0], 'bottom')
+        b.p5 = cartesian(r_top, 0, z_top_out)
+        b.p6 = cartesian(r_top, 90, z_top_out)
+        b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+        b.create()
+        b.e6.type = "arc"
+        b.e6.points = [cartesian(r_top, 45, z_top_out)]
+    elif ring_on_top is not None:
+        b.set_connection(ring_on_top[0], 'top')
+        b.p1 = cartesian(r_bt, 0, z_bt_out)
+        b.p2 = cartesian(r_bt, 90, z_bt_out)
+        b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+        b.create()
+        b.e5.type = "arc"
+        b.e5.points = [cartesian(r_bt, 45, z_bt_out)]
+    else:
+        b.p1 = cartesian(r_bt, 0, z_bt_out)
+        b.p2 = cartesian(r_bt, 90, z_bt_out)
+        b.p5 = cartesian(r_top, 0, z_top_out)
+        b.p6 = cartesian(r_top, 90, z_top_out)
+        b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+        b.create()
+        b.e5.type = "arc"
+        b.e5.points = [cartesian(r_bt, 45, z_bt_out)]
+        b.e6.type = "arc"
+        b.e6.points = [cartesian(r_top, 45, z_top_out)]
     blocks.append(b)
 
     for i in range(2):
         i+=1
         b = Block(mesh)
         b.face_left = faces_inside[i]
-
         b.face_front = blocks[i-1].face_back
-        b.p2 = cartesian(r_bt, 90*(i+1), z_bt)
-        b.p6 = cartesian(r_top, 90*(i+1), z_top)
-        b.set_number_of_cell(res_r, int(res_phi/4), res_z)
-        b.create()
-        b.e5.type = "arc"
-        b.e5.points = [cartesian(r_bt, i*90 + 45, z_bt)]
-        b.e6.type = "arc"
-        b.e6.points = [cartesian(r_top, i*90 + 45, z_top)]
+        if faces_outside != []:
+            b.face_right = faces_outside[i]
+            b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+            b.create()
+        elif ring_below is not None:
+            b.set_connection(ring_below.blocks[i], 'bottom')
+            b.p6 = cartesian(r_top, 90*(i+1), z_top_out)
+            b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+            b.create()
+            b.e6.type = "arc"
+            b.e6.points = [cartesian(r_top, i*90 + 45, z_top_out)]
+        elif ring_on_top is not None:
+            b.set_connection(ring_on_top.blocks[i], 'top')
+            b.p2 = cartesian(r_bt, 90*(i+1), z_bt_out)
+            b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+            b.create()
+            b.e5.type = "arc"
+            b.e5.points = [cartesian(r_bt, i*90 + 45, z_bt_out)]
+        else:
+            b.p2 = cartesian(r_bt, 90*(i+1), z_bt_out)
+            b.p6 = cartesian(r_top, 90*(i+1), z_top_out)
+            b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+            b.create()
+            b.e5.type = "arc"
+            b.e5.points = [cartesian(r_bt, i*90 + 45, z_bt_out)]
+            b.e6.type = "arc"
+            b.e6.points = [cartesian(r_top, i*90 + 45, z_top_out)]
         blocks.append(b)
 
     b = Block(mesh)
@@ -709,10 +837,47 @@ def create_ring(mesh, r_top, r_bt, z_top, z_bt, faces_inside, res_r, res_phi, re
     b.face_back = blocks[0].face_front
     b.set_number_of_cell(res_r, int(res_phi/4), res_z)
     b.create()
-    b.e5.type = "arc"
-    b.e5.points = [cartesian(r_bt, 360 - 45, z_bt)]
-    b.e6.type = "arc"
-    b.e6.points = [cartesian(r_top, 360 - 45, z_top)]
+    if faces_outside != []:
+        pass
+    elif ring_below is not None:
+        b.e6.type = "arc"
+        b.e6.points = [cartesian(r_top, 360 - 45, z_top_out)]
+    elif ring_on_top is not None:
+        b.e5.type = "arc"
+        b.e5.points = [cartesian(r_bt, 360 - 45, z_bt_out)]
+    else:
+        b.e5.type = "arc"
+        b.e5.points = [cartesian(r_bt, 360 - 45, z_bt_out)]
+        b.e6.type = "arc"
+        b.e6.points = [cartesian(r_top, 360 - 45, z_top_out)]
+    blocks.append(b)
+
+    if type(z_bt) is interp1d:
+        for b in blocks:
+            b.e0.type = "spline"
+        for r in np.linspace(r_in_bt, r_bt, spline_res, endpoint=False):
+            blocks[0].e0.points.append(cartesian(r, 0, z_bt(r)))
+            blocks[1].e0.points.append(cartesian(r, 90, z_bt(r)))
+            blocks[2].e0.points.append(cartesian(r, 180, z_bt(r)))
+            blocks[3].e0.points.append(cartesian(r, 270, z_bt(r)))
+
+    if type(z_top) is interp1d:
+        for b in blocks:
+            b.e3.type = "spline"
+        for r in np.linspace(r_in_top, r_top, spline_res, endpoint=False):
+            blocks[0].e3.points.append(cartesian(r, 0, z_top(r)))
+            blocks[1].e3.points.append(cartesian(r, 90, z_top(r)))
+            blocks[2].e3.points.append(cartesian(r, 180, z_top(r)))
+            blocks[3].e3.points.append(cartesian(r, 270, z_top(r)))
+
+    if spline_outside is not None:
+        for b in blocks:
+            b.e9.type = "spline"
+        for r in np.linspace(r_bt, r_top, spline_res):
+            blocks[0].e9.points.append(cartesian(r, 0, spline_outside(r)))
+            blocks[1].e9.points.append(cartesian(r, 90, spline_outside(r)))
+            blocks[2].e9.points.append(cartesian(r, 180, spline_outside(r)))
+            blocks[3].e9.points.append(cartesian(r, 270, spline_outside(r)))
 
     surf_top = []
     surf_bt = []

@@ -29,7 +29,7 @@ class Mesh:
         self.edge_count += 1
         self.edges.append(e)
         return e
-    
+
     def _add_block(self, block):
         block.id = self.block_count
         self.block_count += 1
@@ -40,20 +40,22 @@ class Mesh:
             os.makedirs("./system")
         with open("./system/blockMeshDict", "w") as f:
             # header
-            f.writelines([
-                "FoamFile\n",
-                "{\n",
-                "    version     2.0;\n",
-                "    format      ascii;\n",
-                "    class       dictionary;\n",
-                "    object      blockMeshDict;\n",
-                "}\n",
-                "\n",
-                "// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n",
-                "\n",
-                "convertToMeters 1.0;\n",
-                "\n",
-                            ])
+            f.writelines(
+                [
+                    "FoamFile\n",
+                    "{\n",
+                    "    version     2.0;\n",
+                    "    format      ascii;\n",
+                    "    class       dictionary;\n",
+                    "    object      blockMeshDict;\n",
+                    "}\n",
+                    "\n",
+                    "// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n",
+                    "\n",
+                    "convertToMeters 1.0;\n",
+                    "\n",
+                ]
+            )
             f.write("vertices\n(\n")
             for p in self.points:
                 f.write(f"    ({p.x0} {p.x1} {p.x2})\n")
@@ -74,7 +76,9 @@ class Mesh:
             f.write(");\n\n")
             f.write("blocks\n(\n")
             for b in self.blocks:
-                f.write(f"    hex ({b.p0.id} {b.p1.id} {b.p2.id} {b.p3.id} {b.p4.id} {b.p5.id} {b.p6.id} {b.p7.id})\n")
+                f.write(
+                    f"    hex ({b.p0.id} {b.p1.id} {b.p2.id} {b.p3.id} {b.p4.id} {b.p5.id} {b.p6.id} {b.p7.id})\n"
+                )
                 f.write(f"    ({b.cells_x0} {b.cells_x1} {b.cells_x2})\n")
                 f.write(f"    {b.grading}\n")
             f.write(");\n\n")
@@ -82,12 +86,15 @@ class Mesh:
             for p in self.patches:
                 f.write(f"    {p.name}\n    (\n")
                 for face in p.faces:
-                    f.write(f"    ({face[0].id} {face[1].id} {face[2].id} {face[3].id})\n")
+                    f.write(
+                        f"    ({face[0].id} {face[1].id} {face[2].id} {face[3].id})\n"
+                    )
                 f.write("    )\n")
             f.write(");\n\n")
             f.write("mergePatchPairs\n(\n);\n\n")
-            f.write("// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n")
-
+            f.write(
+                "// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
+            )
 
 
 class Block:
@@ -153,19 +160,27 @@ class Block:
 
         if self._p0 is None:
             self._p0 = self.mesh._add_point(
-                self.front_left_bottom[0], self.front_left_bottom[1], self.front_left_bottom[2]
+                self.front_left_bottom[0],
+                self.front_left_bottom[1],
+                self.front_left_bottom[2],
             )
         if self._p1 is None:
             self._p1 = self.mesh._add_point(
-                self.front_right_bottom[0], self.front_right_bottom[1], self.front_right_bottom[2]
+                self.front_right_bottom[0],
+                self.front_right_bottom[1],
+                self.front_right_bottom[2],
             )
         if self._p2 is None:
             self._p2 = self.mesh._add_point(
-                self.back_right_bottom[0], self.back_right_bottom[1], self.back_right_bottom[2]
+                self.back_right_bottom[0],
+                self.back_right_bottom[1],
+                self.back_right_bottom[2],
             )
         if self._p3 is None:
             self._p3 = self.mesh._add_point(
-                self.back_left_bottom[0], self.back_left_bottom[1], self.back_left_bottom[2]
+                self.back_left_bottom[0],
+                self.back_left_bottom[1],
+                self.back_left_bottom[2],
             )
         if self._p4 is None:
             self._p4 = self.mesh._add_point(
@@ -173,14 +188,18 @@ class Block:
             )
         if self._p5 is None:
             self._p5 = self.mesh._add_point(
-                self.front_right_top[0], self.front_right_top[1], self.front_right_top[2]
+                self.front_right_top[0],
+                self.front_right_top[1],
+                self.front_right_top[2],
             )
         if self._p6 is None:
             self._p6 = self.mesh._add_point(
                 self.back_right_top[0], self.back_right_top[1], self.back_right_top[2]
             )
         if self._p7 is None:
-            self._p7 = self.mesh._add_point(self.back_left_top[0], self.back_left_top[1], self.back_left_top[2])
+            self._p7 = self.mesh._add_point(
+                self.back_left_top[0], self.back_left_top[1], self.back_left_top[2]
+            )
 
         if self.e0 is None:
             self.e0 = self.mesh._add_edge(self._p0, self._p1)
@@ -218,7 +237,9 @@ class Block:
                        Options: top, bottom, left, right, front, back
         """
         if other._created == False:
-            raise RuntimeError("The other block was not created. Run other_block.create() first!")
+            raise RuntimeError(
+                "The other block was not created. Run other_block.create() first!"
+            )
         if pos == "top":
             self._p4 = other._p0
             self._p5 = other._p1
@@ -286,7 +307,9 @@ class Block:
             self._cells_x0 = other.cells_x0
             self._cells_x2 = other.cells_x2
         else:
-            raise ValueError("This position does not exist.\nThe following values are allowed for 'pos': top, bottom, left, right, front, back")
+            raise ValueError(
+                "This position does not exist.\nThe following values are allowed for 'pos': top, bottom, left, right, front, back"
+            )
 
     def set_number_of_cell(self, x0=10, x1=10, x2=10):
         # if self._cells_x0 != 0 or self._cells_x1 != 0 or self.cells_x2 != 0:
@@ -302,9 +325,11 @@ class Block:
     @cells_x0.setter
     def cells_x0(self, val):
         if self._cells_x0 != 0:
-            raise RuntimeError("This value was already set or derived from a connected block.")
+            raise RuntimeError(
+                "This value was already set or derived from a connected block."
+            )
         self._cells_x0 = val
-    
+
     @property
     def cells_x1(self):
         return self._cells_x1
@@ -312,7 +337,9 @@ class Block:
     @cells_x1.setter
     def cells_x1(self, val):
         if self._cells_x1 != 0:
-            raise RuntimeError("This value was already set or derived from a connected block.")
+            raise RuntimeError(
+                "This value was already set or derived from a connected block."
+            )
         self._cells_x1 = val
 
     @property
@@ -322,7 +349,9 @@ class Block:
     @cells_x2.setter
     def cells_x2(self, val):
         if self._cells_x2 != 0:
-            raise RuntimeError("This value was already set or derived from a connected block.")
+            raise RuntimeError(
+                "This value was already set or derived from a connected block."
+            )
         self._cells_x2 = val
 
     @property
@@ -580,6 +609,7 @@ class Point:
     x2: float
     id: int = -1
 
+
 class Edge:
     def __init__(self, p0, p1, id=-1) -> None:
         self.p0 = p0
@@ -587,6 +617,7 @@ class Edge:
         self.id = id
         self.type = "line"
         self.points = []
+
 
 class Patch:
     def __init__(self, mesh, name) -> None:
@@ -597,12 +628,14 @@ class Patch:
     def add_face(self, face):
         self.faces.append(face)
 
+
 @dataclass
 class Ring:
     blocks: list
     surf_top: list
     surf_bt: list
     surf_rad: list
+
 
 @dataclass
 class Cylinder:
@@ -611,17 +644,17 @@ class Cylinder:
     surf_top: list
     surf_bt: list
     surf_rad: list
-    
+
 
 def cartesian(r, phi, z, degree=True):
     if degree:
-        phi = 2*np.pi * phi / 360
+        phi = 2 * np.pi * phi / 360
     x = r * np.cos(phi)
     y = r * np.sin(phi)
     return [x, y, z]
 
 
-def spline(points, kind='cubic'):
+def spline(points, kind="cubic"):
     """Create a spline functions
 
     Args:
@@ -629,6 +662,7 @@ def spline(points, kind='cubic'):
     """
     points = np.array(points)
     return interp1d(points[:, 0], points[:, 1], kind=kind)
+
 
 def plot_spline(sp, r, fig=None, ax=None):
     if fig is None:
@@ -638,12 +672,23 @@ def plot_spline(sp, r, fig=None, ax=None):
     return fig, ax
 
 
-
-
-def create_cylinder(mesh, r_top, r_bt, z_top, z_bt, res_r, res_phi, res_z, radius_ratio=0.5, spline_res=100, cylinder_below=None, cylinder_on_top=None):
+def create_cylinder(
+    mesh,
+    r_top,
+    r_bt,
+    z_top,
+    z_bt,
+    res_r,
+    res_phi,
+    res_z,
+    radius_ratio=0.5,
+    spline_res=100,
+    cylinder_below=None,
+    cylinder_on_top=None,
+):
     if cylinder_below is not None and cylinder_on_top is not None:
         raise ValueError("Both cylinder on top and below is not possible.")
-    
+
     # Central block
     radius_center_top = r_top * radius_ratio
     radius_center_bt = r_bt * radius_ratio
@@ -661,14 +706,14 @@ def create_cylinder(mesh, r_top, r_bt, z_top, z_bt, res_r, res_phi, res_z, radiu
 
     if cylinder_below is not None:
         b = Block(mesh)
-        b.set_connection(cylinder_below.core, 'bottom')
+        b.set_connection(cylinder_below.core, "bottom")
         b.p4 = cartesian(radius_center_top, 0, z_top_mid)
         b.p5 = cartesian(radius_center_top, 90, z_top_mid)
         b.p6 = cartesian(radius_center_top, 180, z_top_mid)
         b.p7 = cartesian(radius_center_top, 270, z_top_mid)
     elif cylinder_on_top is not None:
         b = Block(mesh)
-        b.set_connection(cylinder_on_top.core, 'top')
+        b.set_connection(cylinder_on_top.core, "top")
         b.p0 = cartesian(radius_center_bt, 0, z_bt_mid)
         b.p1 = cartesian(radius_center_bt, 90, z_bt_mid)
         b.p2 = cartesian(radius_center_bt, 180, z_bt_mid)
@@ -683,7 +728,7 @@ def create_cylinder(mesh, r_top, r_bt, z_top, z_bt, res_r, res_phi, res_z, radiu
             cartesian(radius_center_top, 0, z_top_mid),
             cartesian(radius_center_top, 90, z_top_mid),
             cartesian(radius_center_top, 180, z_top_mid),
-            cartesian(radius_center_top, 270, z_top_mid)
+            cartesian(radius_center_top, 270, z_top_mid),
         )
     b.set_number_of_cell(res_center_r, res_center_r, res_z)
     b.create()
@@ -695,20 +740,24 @@ def create_cylinder(mesh, r_top, r_bt, z_top, z_bt, res_r, res_phi, res_z, radiu
         radii = []
         phis = []
         for dist in np.linspace(0, 1, spline_res, endpoint=False):
-            pos = x0 + dist*(x1-x0)
-            radii.append((pos[0]**2 + pos[1]**2)**0.5)
-            phis.append(np.arctan(pos[1]/pos[0])*360/(2*np.pi))
+            pos = x0 + dist * (x1 - x0)
+            radii.append((pos[0] ** 2 + pos[1] ** 2) ** 0.5)
+            phis.append(np.arctan(pos[1] / pos[0]) * 360 / (2 * np.pi))
         z_vals = z_bt(radii)
-        
+
         b.e0.type = "spline"
         b.e5.type = "spline"
         b.e1.type = "spline"
         b.e4.type = "spline"
         for i in range(len(radii) - 1):
-            b.e0.points.append(cartesian(radii[i+1], phis[i+1], z_vals[i+1]))
-            b.e5.points.append(cartesian(radii[i+1], phis[i+1] + 90, z_vals[i+1]))
-            b.e1.points.append(cartesian(radii[i+1], 270 - phis[i+1], z_vals[i+1]))
-            b.e4.points.append(cartesian(radii[i+1], 360 - phis[i+1], z_vals[i+1]))
+            b.e0.points.append(cartesian(radii[i + 1], phis[i + 1], z_vals[i + 1]))
+            b.e5.points.append(cartesian(radii[i + 1], phis[i + 1] + 90, z_vals[i + 1]))
+            b.e1.points.append(
+                cartesian(radii[i + 1], 270 - phis[i + 1], z_vals[i + 1])
+            )
+            b.e4.points.append(
+                cartesian(radii[i + 1], 360 - phis[i + 1], z_vals[i + 1])
+            )
 
     if type(z_top) is interp1d:
         x0 = np.array(cartesian(radius_center_bt, 0, z_top_mid))
@@ -716,9 +765,9 @@ def create_cylinder(mesh, r_top, r_bt, z_top, z_bt, res_r, res_phi, res_z, radiu
         radii = []
         phis = []
         for dist in np.linspace(0, 1, spline_res, endpoint=False):
-            pos = x0 + dist*(x1-x0)
-            radii.append((pos[0]**2 + pos[1]**2)**0.5)
-            phis.append(np.arctan(pos[1]/pos[0])*360/(2*np.pi))
+            pos = x0 + dist * (x1 - x0)
+            radii.append((pos[0] ** 2 + pos[1] ** 2) ** 0.5)
+            phis.append(np.arctan(pos[1] / pos[0]) * 360 / (2 * np.pi))
         z_vals = z_top(radii)
 
         b.e3.type = "spline"
@@ -727,10 +776,14 @@ def create_cylinder(mesh, r_top, r_bt, z_top, z_bt, res_r, res_phi, res_z, radiu
         b.e7.type = "spline"
 
         for i in range(len(radii) - 1):
-            b.e3.points.append(cartesian(radii[i+1], phis[i+1], z_vals[i+1]))
-            b.e6.points.append(cartesian(radii[i+1], phis[i+1] + 90, z_vals[i+1]))
-            b.e2.points.append(cartesian(radii[i+1], 270 - phis[i+1], z_vals[i+1]))
-            b.e7.points.append(cartesian(radii[i+1], 360 - phis[i+1], z_vals[i+1]))
+            b.e3.points.append(cartesian(radii[i + 1], phis[i + 1], z_vals[i + 1]))
+            b.e6.points.append(cartesian(radii[i + 1], phis[i + 1] + 90, z_vals[i + 1]))
+            b.e2.points.append(
+                cartesian(radii[i + 1], 270 - phis[i + 1], z_vals[i + 1])
+            )
+            b.e7.points.append(
+                cartesian(radii[i + 1], 360 - phis[i + 1], z_vals[i + 1])
+            )
 
     # create ring around these blocks
     ring_below = None
@@ -739,15 +792,47 @@ def create_cylinder(mesh, r_top, r_bt, z_top, z_bt, res_r, res_phi, res_z, radiu
         ring_below = cylinder_below.ring
     if cylinder_on_top is not None:
         ring_on_top = cylinder_on_top.ring
-    ring = create_ring(mesh, r_top, radius_center_top, r_bt, radius_center_bt, z_top, z_bt, [b.face_front, b.face_right, b.face_back, b.face_left], res_r, res_phi, res_z, spline_res, ring_below=ring_below, ring_on_top=ring_on_top)
+    ring = create_ring(
+        mesh,
+        r_top,
+        radius_center_top,
+        r_bt,
+        radius_center_bt,
+        z_top,
+        z_bt,
+        [b.face_front, b.face_right, b.face_back, b.face_left],
+        res_r,
+        res_phi,
+        res_z,
+        spline_res,
+        ring_below=ring_below,
+        ring_on_top=ring_on_top,
+    )
     surf_top = [b.face_top] + ring.surf_top
     surf_bt = [b.face_bottom] + ring.surf_bt
 
     return Cylinder(b, ring, surf_top, surf_bt, ring.surf_rad)
 
 
-def create_ring(mesh, r_top, r_in_top, r_bt, r_in_bt, z_top, z_bt, faces_inside, res_r, res_phi, res_z, spline_res=100, spline_outside=None, ring_below=None, ring_on_top=None, faces_outside=[]):
-    
+def create_ring(
+    mesh,
+    r_top,
+    r_in_top,
+    r_bt,
+    r_in_bt,
+    z_top,
+    z_bt,
+    faces_inside,
+    res_r,
+    res_phi,
+    res_z,
+    spline_res=100,
+    spline_outside=None,
+    ring_below=None,
+    ring_on_top=None,
+    faces_outside=[],
+):
+
     if ring_below is not None and ring_on_top is not None:
         raise ValueError("It's not allowed to provide both ring_on_top and ring_below.")
 
@@ -761,26 +846,26 @@ def create_ring(mesh, r_top, r_in_top, r_bt, r_in_bt, z_top, z_bt, faces_inside,
         z_top_out = z_top
 
     blocks = []
-    
+
     b = Block(mesh)
     b.face_left = faces_inside[0]
     if faces_outside != []:
         b.face_right = faces_outside[0]
-        b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+        b.set_number_of_cell(res_r, int(res_phi / 4), res_z)
         b.create()
     elif ring_below is not None:
-        b.set_connection(ring_below.blocks[0], 'bottom')
+        b.set_connection(ring_below.blocks[0], "bottom")
         b.p5 = cartesian(r_top, 0, z_top_out)
         b.p6 = cartesian(r_top, 90, z_top_out)
-        b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+        b.set_number_of_cell(res_r, int(res_phi / 4), res_z)
         b.create()
         b.e6.type = "arc"
         b.e6.points = [cartesian(r_top, 45, z_top_out)]
     elif ring_on_top is not None:
-        b.set_connection(ring_on_top[0], 'top')
+        b.set_connection(ring_on_top[0], "top")
         b.p1 = cartesian(r_bt, 0, z_bt_out)
         b.p2 = cartesian(r_bt, 90, z_bt_out)
-        b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+        b.set_number_of_cell(res_r, int(res_phi / 4), res_z)
         b.create()
         b.e5.type = "arc"
         b.e5.points = [cartesian(r_bt, 45, z_bt_out)]
@@ -789,7 +874,7 @@ def create_ring(mesh, r_top, r_in_top, r_bt, r_in_bt, z_top, z_bt, faces_inside,
         b.p2 = cartesian(r_bt, 90, z_bt_out)
         b.p5 = cartesian(r_top, 0, z_top_out)
         b.p6 = cartesian(r_top, 90, z_top_out)
-        b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+        b.set_number_of_cell(res_r, int(res_phi / 4), res_z)
         b.create()
         b.e5.type = "arc"
         b.e5.points = [cartesian(r_bt, 45, z_bt_out)]
@@ -798,44 +883,44 @@ def create_ring(mesh, r_top, r_in_top, r_bt, r_in_bt, z_top, z_bt, faces_inside,
     blocks.append(b)
 
     for i in range(2):
-        i+=1
+        i += 1
         b = Block(mesh)
         b.face_left = faces_inside[i]
-        b.face_front = blocks[i-1].face_back
+        b.face_front = blocks[i - 1].face_back
         if faces_outside != []:
             b.face_right = faces_outside[i]
-            b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+            b.set_number_of_cell(res_r, int(res_phi / 4), res_z)
             b.create()
         elif ring_below is not None:
-            b.set_connection(ring_below.blocks[i], 'bottom')
-            b.p6 = cartesian(r_top, 90*(i+1), z_top_out)
-            b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+            b.set_connection(ring_below.blocks[i], "bottom")
+            b.p6 = cartesian(r_top, 90 * (i + 1), z_top_out)
+            b.set_number_of_cell(res_r, int(res_phi / 4), res_z)
             b.create()
             b.e6.type = "arc"
-            b.e6.points = [cartesian(r_top, i*90 + 45, z_top_out)]
+            b.e6.points = [cartesian(r_top, i * 90 + 45, z_top_out)]
         elif ring_on_top is not None:
-            b.set_connection(ring_on_top.blocks[i], 'top')
-            b.p2 = cartesian(r_bt, 90*(i+1), z_bt_out)
-            b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+            b.set_connection(ring_on_top.blocks[i], "top")
+            b.p2 = cartesian(r_bt, 90 * (i + 1), z_bt_out)
+            b.set_number_of_cell(res_r, int(res_phi / 4), res_z)
             b.create()
             b.e5.type = "arc"
-            b.e5.points = [cartesian(r_bt, i*90 + 45, z_bt_out)]
+            b.e5.points = [cartesian(r_bt, i * 90 + 45, z_bt_out)]
         else:
-            b.p2 = cartesian(r_bt, 90*(i+1), z_bt_out)
-            b.p6 = cartesian(r_top, 90*(i+1), z_top_out)
-            b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+            b.p2 = cartesian(r_bt, 90 * (i + 1), z_bt_out)
+            b.p6 = cartesian(r_top, 90 * (i + 1), z_top_out)
+            b.set_number_of_cell(res_r, int(res_phi / 4), res_z)
             b.create()
             b.e5.type = "arc"
-            b.e5.points = [cartesian(r_bt, i*90 + 45, z_bt_out)]
+            b.e5.points = [cartesian(r_bt, i * 90 + 45, z_bt_out)]
             b.e6.type = "arc"
-            b.e6.points = [cartesian(r_top, i*90 + 45, z_top_out)]
+            b.e6.points = [cartesian(r_top, i * 90 + 45, z_top_out)]
         blocks.append(b)
 
     b = Block(mesh)
     b.face_left = faces_inside[-1]
     b.face_front = blocks[-1].face_back
     b.face_back = blocks[0].face_front
-    b.set_number_of_cell(res_r, int(res_phi/4), res_z)
+    b.set_number_of_cell(res_r, int(res_phi / 4), res_z)
     b.create()
     if faces_outside != []:
         pass
@@ -893,14 +978,18 @@ def create_ring(mesh, r_top, r_in_top, r_bt, r_in_bt, z_top, z_bt, faces_inside,
 def create_cylinder_on_top():
     pass
 
+
 def create_ring_on_top():
     pass
+
 
 def create_cylinder_below():
     pass
 
+
 def create_ring_below():
     pass
+
 
 def create_ring_in_between():
     pass

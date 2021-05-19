@@ -9,9 +9,9 @@ s_bt = spline(points_fz.s_bt)  # phase interface: bottom of c1, r1, r2
 s_fs = spline(points_fz.s_fs)  # free surface: right of r2, top of r3
 s_mf = spline(points_fz.s_mf)  # melting front: top of c2
 
-# fig, ax = plot_spline(s_bt, [0, 0.4])
-# plot_spline(s_fs, [0.1, 0.4], fig, ax)
-# plot_spline(s_mf, [0, 0.1], fig, ax)
+fig, ax = plot_spline(s_bt, [0, 0.4])
+plot_spline(s_fs, [0.1, 0.4], fig, ax)
+plot_spline(s_mf, [0, 0.1], fig, ax)
 # plt.show()
 
 ####################
@@ -61,9 +61,17 @@ r_c2_top = points_fz.r_feed
 # Mesh sizes
 res_phi = 120
 res_r_c1 = 10  # applies also for c2
-res_z_c1 = 10  # applies also for r1, r2
 res_r_r1 = 20  # applies also fro r3
-res_z_c2 = 20  # applies also for r2, r3
+
+# res_z_c1 = 10  # applies also for r1, r2
+# res_z_c2 = 20  # applies also for r2, r3
+####################
+res_z_c1, grading_bottom = boundary_layer(
+    0.1, "xmin", smallest_element=0.0003, layer_thickness=0.007, growth_rate=1.2
+)
+res_z_c2, grading_top = boundary_layer(
+    0.1, "xmax", smallest_element=0.0003, layer_thickness=0.01, growth_rate=1.2
+)
 
 ####################
 # Blocks (defined as cylinders & rings)
@@ -122,6 +130,16 @@ r3 = create_ring(
     res_z_c2,
     faces_outside=r2.surf_top,
 )
+
+####################
+# Grading
+c2.set_grading_axial(grading_top)
+r3.set_grading_axial(grading_top)
+r2.set_grading_radial(grading_top)
+
+c1.set_grading_axial(grading_bottom)
+r1.set_grading_axial(grading_bottom)
+r2.set_grading_axial(grading_bottom)
 
 ####################
 # Patches

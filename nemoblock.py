@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+from numpy.core.shape_base import block
 from scipy.interpolate import interp1d
 
 
@@ -635,6 +636,20 @@ class Ring:
     surf_top: list
     surf_bt: list
     surf_rad: list
+    grading_r: str = "1"
+    grading_z: str = "1"
+
+    def update_grading(self):
+        for b in self.blocks:
+            b.grading = f"simpleGrading ({self.grading_r} 1 {self.grading_z})"
+
+    def set_grading_radial(self, val):
+        self.grading_r = val
+        self.update_grading()
+
+    def set_grading_axial(self, val):
+        self.grading_z = val
+        self.update_grading()
 
 
 @dataclass
@@ -644,6 +659,21 @@ class Cylinder:
     surf_top: list
     surf_bt: list
     surf_rad: list
+    grading_r: str = "1"
+    grading_z: str = "1"
+
+    def update_grading(self):
+        self.core.grading = f"simpleGrading (1 1 {self.grading_z})"
+        self.ring.set_grading_radial(self.grading_r)
+        self.ring.set_grading_axial(self.grading_z)
+
+    def set_grading_radial(self, val):
+        self.grading_r = val
+        self.update_grading()
+
+    def set_grading_axial(self, val):
+        self.grading_z = val
+        self.update_grading()
 
 
 def cartesian(r, phi, z, degree=True):
@@ -975,21 +1005,50 @@ def create_ring(
     return Ring(blocks, surf_top, surf_bt, surf_rad)
 
 
-def create_cylinder_on_top():
-    pass
+def boundary_layer(
+    block_size,
+    pos="xmin",
+    smallest_element=0.0003,
+    layer_thickness=0.007,
+    growth_rate=1.2,
+):
+    # Idee Kaspars: smallest_element,  largest_element, layer_thickness, number_of_elements, growth_rate, largest_smallest_ratio
+    if growth_rate < 1:
+        growth_rate = 1 / growth_rate
+    # compute number of elements in boundary layer
+    if growth_rate == 1:
+        n_el_bl = int(np.ceil(layer_thickness / smallest_element))
+    else:
+        n_el_bl = int(
+            np.ceil(
+                np.log(1 - layer_thickness * (1 - growth_rate) / smallest_element)
+                / np.log(growth_rate)
+            )
+        )
+    # update layer thickness to match rounded number of elements
+    if growth_rate == 1:
+        layer_thickness = smallest_element * n_el_bl
+    else:
+        layer_thickness = (
+            smallest_element * (1 - growth_rate ** n_el_bl) / (1 - growth_rate)
+        )
+    # maximum element size
+    if growth_rate == 1:
+        largest_element = smallest_element
+    else:
+        largest_element = smallest_element * growth_rate ** (n_el_bl - 1)
+    # number of elements outside of boundary layer
+    n_el_out = int((block_size - layer_thickness) / largest_element)
+    n_el = n_el_bl + n_el_out
 
-
-def create_ring_on_top():
-    pass
-
-
-def create_cylinder_below():
-    pass
-
-
-def create_ring_below():
-    pass
-
-
-def create_ring_in_between():
-    pass
+    if pos == "xmin":
+        grading = f"( ({layer_thickness / block_size} {n_el_bl} {growth_rate**(n_el_bl-1)}) ({(block_size-layer_thickness)/block_size} {n_el_out} 1) )"
+    elif pos == "xmax":
+        grading = f"( ({(block_size-layer_thickness)/block_size} {n_el_out} 1) ({layer_thickness/block_size} {n_el_bl} {1/growth_rate**(n_el_bl-1)}) )"
+    else:
+        raise ValueError(f"Position '{pos}'' not defined. Use either 'xmin' or 'xmax'")
+    print('Elements in BL:', n_el_bl)
+    print('Elements outside:', n_el_out)
+    print('Layer thickness:', layer_thickness)
+    print('Larges Element:', largest_element)
+    return n_el, grading

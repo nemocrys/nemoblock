@@ -846,8 +846,8 @@ def create_cylinder(
             )
 
     if type(z_top) is interp1d:
-        x0 = np.array(cartesian(radius_center_bt, 0, z_top_mid))
-        x1 = np.array(cartesian(radius_center_bt, 90, z_top_mid))
+        x0 = np.array(cartesian(radius_center_top, 0, z_top_mid))
+        x1 = np.array(cartesian(radius_center_top, 90, z_top_mid))
         radii = []
         phis = []
         for dist in np.linspace(0, 1, spline_res, endpoint=False):

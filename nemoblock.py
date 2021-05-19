@@ -7,6 +7,8 @@ from scipy.interpolate import interp1d
 
 
 class Mesh:
+    """Collection of everything that belongs into the blockMeshDict."""
+
     def __init__(self) -> None:
         self.blocks = []
         self.block_count = 0
@@ -99,6 +101,8 @@ class Mesh:
 
 
 class Block:
+    """Block of the mesh. Naming of points and edges following openFOAM standard (see block-naming.png)"""
+
     def __init__(
         self,
         mesh,
@@ -605,6 +609,8 @@ class Block:
 
 @dataclass
 class Point:
+    """Point in the mesh."""
+
     x0: float
     x1: float
     x2: float
@@ -612,6 +618,8 @@ class Point:
 
 
 class Edge:
+    """Edge of a block."""
+
     def __init__(self, p0, p1, id=-1) -> None:
         self.p0 = p0
         self.p1 = p1
@@ -621,6 +629,8 @@ class Edge:
 
 
 class Patch:
+    """Patch to define boundaries."""
+
     def __init__(self, mesh, name) -> None:
         self.name = name
         self.faces = []
@@ -632,6 +642,8 @@ class Patch:
 
 @dataclass
 class Ring:
+    """Ring object to build meshes."""
+
     blocks: list
     surf_top: list
     surf_bt: list
@@ -654,6 +666,8 @@ class Ring:
 
 @dataclass
 class Cylinder:
+    """Cylinder object to build meshes."""
+
     core: Block
     ring: Ring
     surf_top: list
@@ -677,6 +691,17 @@ class Cylinder:
 
 
 def cartesian(r, phi, z, degree=True):
+    """Convert cylindrical to cartesian coordinates.
+
+    Args:
+        r (float): Radius.
+        phi (float): Angle in degree.
+        z (float): Axial coordinate.
+        degree (bool): If false: use radiant.
+
+    Returns:
+        cartesian coordinates (x, y, z)
+    """
     if degree:
         phi = 2 * np.pi * phi / 360
     x = r * np.cos(phi)
@@ -689,12 +714,24 @@ def spline(points, kind="cubic"):
 
     Args:
         points (list): list of [r, z] coordinates
+        kind (str, optional): spline type (linear / cubic)
     """
     points = np.array(points)
     return interp1d(points[:, 0], points[:, 1], kind=kind)
 
 
 def plot_spline(sp, r, fig=None, ax=None):
+    """plot spline function
+
+    Args:
+        sp (function): spline function
+        r (list): [min, max radius]
+        fig (figure, optional): Matplotlib figure.
+        ax (axis, optional): Matplotlib axis.
+
+    Returns:
+        matplotlib figure, axis
+    """
     if fig is None:
         fig, ax = plt.subplots(1, 1)
     r = np.linspace(r[0], r[1], 100)
@@ -716,6 +753,25 @@ def create_cylinder(
     cylinder_below=None,
     cylinder_on_top=None,
 ):
+    """Create a cylinder object consisting of a square and a ring.
+
+    Args:
+        mesh (Mesh): Mesh containing the blocks.
+        r_top (float): Radius at the top.
+        r_bt (float): Radius at the bottom.
+        z_top (float or function): Axial coordinate at top or z=f(r).
+        z_bt (float or function): Axial coordinate at bootom or z=f(r).
+        res_r (float): Number of cells in radial direction (in Ring).
+        res_phi (float): Number of cells in circumferential direction.
+        res_z (float): Number of cells in axial direction.
+        radius_ratio (float, optional): Fraction inner square / total radius.
+        spline_res (int, optional): Resolution for spline interplation.
+        cylinder_below (Cylinder, optional): Cylinder object below this cylinder.
+        cylinder_on_top (Cylinder, optional): Cylinder object on top of this cylinder.
+
+    Returns:
+        Cylinder object.
+    """
     if cylinder_below is not None and cylinder_on_top is not None:
         raise ValueError("Both cylinder on top and below is not possible.")
 
@@ -862,6 +918,29 @@ def create_ring(
     ring_on_top=None,
     faces_outside=[],
 ):
+    """Create a ring of 4 blocks.
+
+    Args:
+        mesh (Mesh): Mesh object containing the blocks.
+        r_top (float): Outer radius at top.
+        r_in_top (float): Inner radius at top.
+        r_bt (float): Outer radius at bottom.
+        r_in_bt (float): Inner radius at bottom.
+        z_top (float or function): Axial coordinate at top or z=f(r).
+        z_bt (float or function): Axial coordinate at bottom or z=f(r).
+        faces_inside (list): Faces of blocks inside of the ring.
+        res_r (float): Number of cells in radial direction.
+        res_phi (float): Number of cells in circumferential direction.
+        res_z (float): Number of cells in axial direction.
+        spline_res (int, optional): Resolution for spline interpolation.
+        spline_outside (function, optional): Outer surface z=f(r).
+        ring_below (Ring, optional): Ring object bellow this ring.
+        ring_on_top (Ring, optional): Ring object on top of this ring.
+        faces_outside (list, optional): Surfaces of blocks outside of this ring.
+
+    Returns:
+        Ring object.
+    """
 
     if ring_below is not None and ring_on_top is not None:
         raise ValueError("It's not allowed to provide both ring_on_top and ring_below.")
@@ -892,7 +971,7 @@ def create_ring(
         b.e6.type = "arc"
         b.e6.points = [cartesian(r_top, 45, z_top_out)]
     elif ring_on_top is not None:
-        b.set_connection(ring_on_top[0], "top")
+        b.set_connection(ring_on_top.blocks[0], "top")
         b.p1 = cartesian(r_bt, 0, z_bt_out)
         b.p2 = cartesian(r_bt, 90, z_bt_out)
         b.set_number_of_cell(res_r, int(res_phi / 4), res_z)
@@ -1012,7 +1091,18 @@ def boundary_layer(
     layer_thickness=0.007,
     growth_rate=1.2,
 ):
-    # Idee Kaspars: smallest_element,  largest_element, layer_thickness, number_of_elements, growth_rate, largest_smallest_ratio
+    """Compute boundary layer
+
+    Args:
+        block_size (float): length of block in direction of BL
+        pos (str): Coordinate position for grading
+        smallest_element (float): Minimum element size (preserved)
+        layer_thickness (float): Thickness of BL (modified to match number of elements).
+        growth_rate (float): Growth rate of element size in BL.
+
+    Returns:
+        number of elements, grading-string
+    """
     if growth_rate < 1:
         growth_rate = 1 / growth_rate
     # compute number of elements in boundary layer
@@ -1047,8 +1137,8 @@ def boundary_layer(
         grading = f"( ({(block_size-layer_thickness)/block_size} {n_el_out} 1) ({layer_thickness/block_size} {n_el_bl} {1/growth_rate**(n_el_bl-1)}) )"
     else:
         raise ValueError(f"Position '{pos}'' not defined. Use either 'xmin' or 'xmax'")
-    print('Elements in BL:', n_el_bl)
-    print('Elements outside:', n_el_out)
-    print('Layer thickness:', layer_thickness)
-    print('Larges Element:', largest_element)
+    print("Elements in BL:", n_el_bl)
+    print("Elements outside:", n_el_out)
+    print("Layer thickness:", layer_thickness)
+    print("Larges Element:", largest_element)
     return n_el, grading

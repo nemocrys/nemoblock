@@ -18,7 +18,7 @@ fig, ax = plot_spline(s_bt, [0, r_crystal])
 plot_spline(s_fs, [r_feed, r_crystal], fig, ax)
 plot_spline(s_mf, [0, r_feed], fig, ax)
 plot_spline(s_cr, [0, r_crystal], fig, ax)
-# plt.show()
+plt.show()
 
 ####################
 # Mes structure  (left: symmetry axis)

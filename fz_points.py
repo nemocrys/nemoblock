@@ -2,14 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # parameters
-r_crystal = 0.2032/2  # 8 inch diameter
+r_crystal = 0.1  # 8 inch diameter
 r_feed = 0.006
 l_crystal = 0.6
 
 h_melt = 0.02  # approximate value
 
 n_samples = 100  # for function evaluation
-
 
 # boundary layer
 smallest_element=0.0003

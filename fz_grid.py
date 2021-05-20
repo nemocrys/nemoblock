@@ -4,6 +4,10 @@ from fz_points import *
 mesh = Mesh()
 
 ####################
+# For mesh optimization
+one_mesh_only = True
+
+####################
 # Surfaces defined by splines
 s_bt = spline(s_bt)  # phase interface: bottom of c1, r1, r2
 s_fs = spline(s_fs)  # free surface: right of r2, top of r3
@@ -48,12 +52,12 @@ c1_r_bt = r_feed * 3
 
 # ring r1
 r1_r_top = r_crystal* 3 / 4
-r1_z_top = c1_z_top
+r1_z_top = c1_z_top + h_melt/20
 r1_r_bt = r_crystal * 5 / 6
 
 # ring r2
 r2_r_bt = r_crystal
-r2_r_top = r_crystal * 5 / 6
+r2_r_top = r_crystal * 9/10
 r2_z_top = s_fs(r2_r_top)
 
 # cylinder c2
@@ -133,14 +137,6 @@ r3 = create_ring(
     faces_outside=r2.surf_top,
 )
 
-# crystal
-# c3_z_bt = -0.2
-res_z_c3 = 30
-
-c3 = create_cylinder(mesh, c1_r_bt, c1_r_bt, s_bt(c1_r_bt), s_cr, res_r_c1, res_phi, res_z_c3, cylinder_on_top=c1)
-r4 = create_ring(mesh, r1_r_bt, c1_r_bt, r1_r_bt, c1_r_bt, s_bt(r1_r_bt), s_cr, c3.surf_rad, res_r_r1, res_phi, res_z_c3, ring_on_top=r1)
-r5 = create_ring(mesh, r2_r_bt, r1_r_bt, r2_r_bt, r1_r_bt, s_bt(r2_r_bt), s_cr, r4.surf_rad, res_z_c2, res_phi, res_z_c3, ring_on_top=r2)
-
 ####################
 # Grading
 c2.set_grading_axial(grading_top)
@@ -151,18 +147,134 @@ c1.set_grading_axial(grading_bottom)
 r1.set_grading_axial(grading_bottom)
 r2.set_grading_axial(grading_bottom)
 
-r5.set_grading_radial(grading_top)
 
 ####################
 # Patches
-# bt_surf = Patch(mesh, "wall BottomSurf")
-# bt_surf.faces += c1.surf_bt
-# bt_surf.faces += r1.surf_bt
-# bt_surf.faces += r2.surf_bt
+bt_surf = Patch(mesh, "wall BottomSurf")
+bt_surf.faces += c1.surf_bt
+bt_surf.faces += r1.surf_bt
+bt_surf.faces += r2.surf_bt
 free_surf = Patch(mesh, "wall FreeSurf")
 free_surf.faces += r2.surf_rad
 free_surf.faces += r3.surf_top
 top_surf = Patch(mesh, "wall TopSurf")
 top_surf.faces += c2.surf_top
 
+if not one_mesh_only:
+    mesh.write()
+    if os.path.exists('./system/blockMeshDict_melt'):
+        os.remove('./system/blockMeshDict_melt')
+    os.rename('./system/blockMeshDict', './system/blockMeshDict_melt')
+    mesh = Mesh()
+
+####################
+# crystal in separate mesh
+
+
+#     melt    \
+#    c2, r3   /|
+#  c1, r1, r2/ |
+# |__|_____\/  |
+# .c3|      |  |
+# |b1|  r4  |r5|
+# |__|______|__|
+# .b2|  r6  |r7|
+# |__|      |  |
+# . b3 \    |  |
+# |_______\ |__|
+# .            |
+# |    c4      |
+# .           /
+# |        /
+# .     /
+# | /
+
+
+# parameters
+c3_z_bt = s_bt(0)*2
+b1_z_bt = c3_z_bt * 1.5
+b3_z_bt = b1_z_bt - r1_r_bt
+b2_z_bt = b1_z_bt + (b3_z_bt - b1_z_bt) / 2
+
+# resolution, grading
+res_z_b2 = 8
+res_z_c4 = 25
+res_z_c3, grading_crys = boundary_layer(
+    abs(s_bt(0)*1.5), "xmax", smallest_element, layer_thickness, growth_rate
+)
+
+# blocks
+c3 = create_cylinder(mesh, c1_r_bt, c1_r_bt, s_bt, c3_z_bt, res_r_c1, res_phi, res_z_c3)
+r4 = create_ring(mesh, r1_r_bt, c1_r_bt, r1_r_bt, c1_r_bt, s_bt, c3_z_bt, c3.surf_rad, res_r_r1, res_phi, res_z_c3)
+r5 = create_ring(mesh, r2_r_bt, r1_r_bt, r2_r_bt, r1_r_bt, s_bt, c3_z_bt, r4.surf_rad, res_z_c2, res_phi, res_z_c3)
+b1 = Block(mesh)
+b1.set_connection(c3.core, 'top')
+b1.face_front = c3.ring.blocks[0].face_bottom
+b1.face_right = c3.ring.blocks[1].face_bottom
+b1.face_back = c3.ring.blocks[2].face_bottom
+b1.face_left = c3.ring.blocks[3].face_bottom
+for b in c3.ring.blocks:
+    b.e5.type = 'line'
+    b.e5.points = []
+b1.p0.x2 = b1_z_bt
+b1.p1.x2 = b1_z_bt
+b1.p2.x2 = b1_z_bt
+b1.p3.x2 = b1_z_bt
+b1.set_number_of_cell(c3.core.cells_x0, c3.core.cells_x0, res_r_c1)
+b1.create()
+
+b2 = Block(mesh)
+b2.set_connection(b1, 'top')
+b2.p0 = cartesian(c1_r_bt, 0, b2_z_bt)
+b2.p1 = cartesian(c1_r_bt, 90, b2_z_bt)
+b2.p2 = cartesian(c1_r_bt, 180, b2_z_bt)
+b2.p3 = cartesian(c1_r_bt, 270, b2_z_bt)
+b2.set_number_of_cell(c3.core.cells_x0, c3.core.cells_x0, res_z_b2)
+b2.create()
+r6 = create_ring(mesh, r1_r_bt, c1_r_bt, r_crystal/2, c1_r_bt, b1_z_bt, b2_z_bt, [b2.face_front, b2.face_right, b2.face_back,  b2.face_left], res_r_r1, res_phi, res_z_b2, ring_on_top=r4)
+for b in r6.blocks:
+    b.e5.type = 'line'
+    b.e5.points = []
+b3 = Block(mesh)
+b3.set_connection(b2, 'top')
+b3.face_front = r6.blocks[0].face_bottom
+b3.face_right = r6.blocks[1].face_bottom
+b3.face_back = r6.blocks[2].face_bottom
+b3.face_left = r6.blocks[3].face_bottom
+b3.p0.x2 = b3_z_bt
+b3.p1.x2 = b3_z_bt
+b3.p2.x2 = b3_z_bt
+b3.p3.x2 = b3_z_bt
+b3.set_number_of_cell(c3.core.cells_x0, c3.core.cells_x0, res_r_r1)
+b3.create()
+r7 = create_ring(mesh, r_crystal, r1_r_bt, r_crystal, r_crystal/2, b1_z_bt, b3_z_bt, r6.surf_rad, res_z_c2, res_phi, res_z_b2, ring_on_top=r5)
+c_b3_r7 = Cylinder(b3, r7, [], [], [])
+
+c4 = create_cylinder(mesh, r_crystal, r_crystal, b3_z_bt, s_cr, res_z_c2, res_phi, res_z_c4, cylinder_on_top=c_b3_r7)
+
+# grading
+r5.set_grading_radial(grading_top)
+r7.set_grading_radial(grading_top)
+c4.set_grading_radial(grading_top)
+
+c3.set_grading_axial(grading_crys)
+r4.set_grading_axial(grading_crys)
+r5.set_grading_axial(grading_crys)
+
+# Patches
+top_surf = Patch(mesh, "wall CrysTopSurf")
+top_surf.faces += c3.surf_top
+top_surf.faces += r4.surf_top
+top_surf.faces += r5.surf_top
+
+out_surf = Patch(mesh, "wall CrysOutSurf")
+out_surf.faces += r5.surf_rad
+out_surf.faces += r7.surf_rad
+out_surf.faces += c4.surf_rad
+out_surf.faces += c4.surf_bt
+
 mesh.write()
+if not one_mesh_only:
+    if os.path.exists('./system/blockMeshDict_crys'):
+        os.remove('./system/blockMeshDict_crys')
+    os.rename('./system/blockMeshDict', './system/blockMeshDict_crys')

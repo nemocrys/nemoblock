@@ -598,7 +598,7 @@ class Block:
     def face_bottom(self):
         if not self._created:
             raise RuntimeError("This block was not created yet.")
-        return [self._p3, self._p2, self._p1, self._p0]
+        return [self._p2, self._p1, self._p0, self._p3]
 
     @property
     def face_top(self):

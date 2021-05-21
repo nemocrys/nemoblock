@@ -18,7 +18,7 @@ fig, ax = plot_spline(s_bt, [0, r_crystal])
 plot_spline(s_fs, [r_feed, r_crystal], fig, ax)
 plot_spline(s_mf, [0, r_feed], fig, ax)
 plot_spline(s_cr, [0, r_crystal], fig, ax)
-plt.show()
+# plt.show()
 
 ####################
 # Mes structure  (left: symmetry axis)
@@ -47,17 +47,17 @@ plt.show()
 
 # cylinder c1
 c1_r_top = r_feed * 1.3
-c1_z_top = 0.0
+c1_z_top = -h_melt*0.25
 c1_r_bt = r_feed * 3
 
 # ring r1
-r1_r_top = r_crystal* 3 / 4
-r1_z_top = c1_z_top + h_melt/20
-r1_r_bt = r_crystal * 5 / 6
+r1_r_top = r_crystal* 0.51
+r1_z_top = - h_melt *0.15
+r1_r_bt = r_crystal * 0.8
 
 # ring r2
 r2_r_bt = r_crystal
-r2_r_top = r_crystal * 9/10
+r2_r_top = r_crystal * 0.7
 r2_z_top = s_fs(r2_r_top)
 
 # cylinder c2
@@ -66,8 +66,8 @@ c2_r_top = r_feed
 ####################
 # Mesh sizes
 res_phi = 80
-res_r_c1 = 5  # applies also for c2
-res_r_r1 = 15  # applies also fro r3
+res_r_c1 = 4  # applies also for c2
+res_r_r1 = 18  # applies also fro r3
 
 # res_z_c1 = 10  # applies also for r1, r2
 # res_z_c2 = 20  # applies also for r2, r3
@@ -191,16 +191,16 @@ if not one_mesh_only:
 
 
 # parameters
-c3_z_bt = s_bt(0)*2
-b1_z_bt = c3_z_bt * 1.5
+c3_z_bt = s_bt(0) + s_bt(0)*0.7
+b1_z_bt = c3_z_bt + s_bt(0)*0.3
 b3_z_bt = b1_z_bt - r1_r_bt
 b2_z_bt = b1_z_bt + (b3_z_bt - b1_z_bt) / 2
 
 # resolution, grading
 res_z_b2 = 8
-res_z_c4 = 25
+res_z_c4 = 20
 res_z_c3, grading_crys = boundary_layer(
-    abs(s_bt(0)*1.5), "xmax", smallest_element, layer_thickness, growth_rate
+    abs(s_bt(0)*1.5), "xmax", smallest_element, layer_thickness=0.03, growth_rate=1.5
 )
 
 # blocks

@@ -1,19 +1,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
 
 
 # parameters
 r_crucible = 0.2
 r_crystal = 0.1
 l_crystal = 0.6
+l_conus = 0.1
 
-h_melt = 0.1  # approximate value
+h_melt = 0.2
 
 n_samples = 100
 
 # boundary layer
 smallest_element=0.0003
-layer_thickness=0.007
+layer_thickness=0.04
 growth_rate=1.2
 
 # meniscus parameters
@@ -42,29 +44,62 @@ s_fs = np.concatenate(
 # plt.show()
 
 
-# bottom
-r_samples = np.linspace(0, r_crucible, n_samples)
-z_samples = 1e6 * (r_samples ** 10 - r_crucible**10)
-s_bt = np.concatenate(
-    [r_samples.reshape((n_samples, 1)), z_samples.reshape(n_samples, 1)], axis=1
-)
+# bottom (crucible)
+# r_samples = np.linspace(0, r_crucible, n_samples)
+# z_samples = 1.955e6 * (r_samples ** 10 - r_crucible**10)
+# s_bt = np.concatenate(
+#     [r_samples.reshape((n_samples, 1)), z_samples.reshape(n_samples, 1)], axis=1
+# )
+# s_bt = np.array([
+#     [0, -0.2],
+#     [1e-6, -0.2],
+#     [r_crucible*0.8, -0.1],
+#     [r_crucible, 0]
+# ])
+s_bt = np.array([
+    [0, -0.2],
+    [r_crucible*0.1, -0.2],
+    [r_crucible*0.2, -0.199],
+    [r_crucible*0.3, -0.197],
+    [r_crucible*0.4, -0.194],
+    [r_crucible*0.5, -0.19],
+    [r_crucible*0.6, -0.184],
+    [r_crucible*0.7, -0.176],
+    [r_crucible*0.8, -0.162],
+    [r_crucible, 0]
+])
 # plt.plot(r_samples, z_samples)
 # plt.show()
 
 # phase interface
-r_samples = np.linspace(0, r_crystal, n_samples)
-z_samples = -30 * (r_samples ** 3 - r_crystal ** 3) + s_fs[-1, 1]
-s_ph = np.concatenate(
-    [r_samples.reshape((n_samples, 1)), z_samples.reshape(n_samples, 1)], axis=1
-)
+# r_samples = np.linspace(0, r_crystal, n_samples)
+# z_samples = -30 * (r_samples ** 3 - r_crystal ** 3) + s_fs[-1, 1]
+# s_ph = np.concatenate(
+#     [r_samples.reshape((n_samples, 1)), z_samples.reshape(n_samples, 1)], axis=1
+# )
+s_ph = np.array([
+    [0, -0.015],
+    [1e6, -0.015],
+    [r_crystal*0.5, -0.01],
+    [r_crystal, 0]
+])
+s_ph[:, 1] += s_fs[-1, 1]
 # plt.plot(r_samples, z_samples)
 # plt.show()
 
-# crystal bottom
-r_samples = np.linspace(0, r_crystal, n_samples)
-z_samples = -(r_samples ** 1.2 - r_crystal ** 1.2)+ s_fs[-1, 1] + l_crystal
-s_cr = np.concatenate(
-    [r_samples.reshape((n_samples, 1)), z_samples.reshape(n_samples, 1)], axis=1
-)
+# crystal conus
+# r_samples = np.linspace(0, r_crystal, n_samples)
+# z_samples = -(r_samples ** 1.2 - r_crystal ** 1.2)+ s_fs[-1, 1] + l_crystal
+# s_cr = np.concatenate(
+#     [r_samples.reshape((n_samples, 1)), z_samples.reshape(n_samples, 1)], axis=1
+# )
+s_cr = np.array([
+    [0, l_crystal + l_conus],
+    [r_crystal/3, l_crystal + l_conus*2/3],
+    [r_crystal*2/3, l_crystal + l_conus/3],
+    [r_crystal, l_crystal]
+    ])
+s_cr[:, 1] += s_fs[-1, 1]
+
 # plt.plot(r_samples, z_samples)
 # plt.show()

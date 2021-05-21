@@ -5,14 +5,15 @@ import matplotlib.pyplot as plt
 r_crystal = 0.1  # 8 inch diameter
 r_feed = 0.006
 l_crystal = 0.6
+l_conus = 0.1
 
-h_melt = 0.02  # approximate value
+h_melt = 0.05  # approximate value
 
 n_samples = 100  # for function evaluation
 
 # boundary layer
 smallest_element=0.0003
-layer_thickness=0.007
+layer_thickness=0.01
 growth_rate=1.2
 
 # meniscus parameters
@@ -46,11 +47,19 @@ s_fs = np.concatenate(
 # plt.show()
 
 # bottom
-r_samples = np.linspace(0, r_crystal, n_samples)
-z_samples = 0.6*(r_samples ** 1.7 - r_crystal**1.7)  # this leads to approx. 40 mm interface deflection
-s_bt = np.concatenate(
-    [r_samples.reshape((n_samples, 1)), z_samples.reshape(n_samples, 1)], axis=1
-)
+# r_samples = np.linspace(0, r_crystal, n_samples)
+# z_samples = 0.6*(r_samples ** 1.7 - r_crystal**1.7)  # this leads to approx. 40 mm interface deflection
+# s_bt = np.concatenate(
+#     [r_samples.reshape((n_samples, 1)), z_samples.reshape(n_samples, 1)], axis=1
+# )
+s_bt = np.array([
+    [0, -0.04],
+    [1e-6, -0.04],
+    [5e-6, -0.04],
+    [0.05, -0.03],
+    [0.075, -0.018],
+    [0.1, 0]
+])
 
 # melting front
 r_samples = np.linspace(0, r_feed, n_samples)
@@ -60,8 +69,14 @@ s_mf = np.concatenate(
 )
 
 # crystal bottom
-r_samples = np.linspace(0, r_crystal, n_samples)
-z_samples = r_samples ** 1.2 - l_crystal - r_crystal**1.2
-s_cr = np.concatenate(
-    [r_samples.reshape((n_samples, 1)), z_samples.reshape(n_samples, 1)], axis=1
-)
+# r_samples = np.linspace(0, r_crystal, n_samples)
+# z_samples = r_samples ** 1.2 - l_crystal - r_crystal**1.2
+# s_cr = np.concatenate(
+#     [r_samples.reshape((n_samples, 1)), z_samples.reshape(n_samples, 1)], axis=1
+# )
+s_cr = np.array([
+    [0, -l_crystal - l_conus],
+    [r_crystal/3, -l_crystal - l_conus*2/3],
+    [r_crystal*2/3, -l_crystal - l_conus/3],
+    [r_crystal, -l_crystal]
+    ])

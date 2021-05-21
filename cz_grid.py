@@ -171,7 +171,7 @@ if not one_mesh_only:
 ####################
 # crystal
 res_z_c3, grading_crys = boundary_layer(
-    l_crystal, "xmin", smallest_element, layer_thickness, growth_rate
+    l_crystal, "xmin", smallest_element, layer_thickness=0.04, growth_rate=1.5
 )
 
 

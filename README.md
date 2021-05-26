@@ -95,10 +95,12 @@ b2.face_top = b1.face_bottom
 # define missing points
 ...
 # set number of cells
-b2.set_number_of_cell(10, 10, 5)  # In this case you have to provide the number of cells for all directions. Make sure that this is conforming with b1!
+b2.set_number_of_cell(10, 10, 5) 
+# In this case you have to provide the number of cells for all directions.
+# Make sure that this is conforming with b1!
 ```
 
-Only use this if your mesh topology requires it, because this is prone to errors.
+Only use this if your mesh topology requires it, because it is prone to errors.
 
 Eventually, you can create a patch, e.g. an inlet and export you blockMeshDict:
 ```python
@@ -108,7 +110,9 @@ inlet.add_face(b1.face_bottom)
 mesh.write()
 ```
 
-Additional examples, e.g. with grading for boundary layers or much more complex meshes defined using pre-defined cylinders and rings can be found in the examples directory.
+## Examples
+
+Examples, e.g. with grading for boundary layers or much more complex meshes generated using pre-defined cylinders and rings, can be found in the examples directory.
 
 ## License
 

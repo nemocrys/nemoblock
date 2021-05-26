@@ -1,8 +1,8 @@
+"""Mesh for Czochralski crystal growth simulation"""
 from nemoblock import *
 from cz_points import *
 
 mesh = Mesh()
-
 ####################
 # For mesh optimization
 one_mesh_only = True

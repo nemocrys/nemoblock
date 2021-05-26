@@ -1,3 +1,4 @@
+"""Mesh for floating zone crystal growth simulation"""
 from nemoblock import *
 from fz_points import *
 

@@ -1,2 +1,3 @@
 # nemoblock
-Utilities for blockmesh in Python.
+
+Utilities to generate blockMeshDicts for OpenFOAM.

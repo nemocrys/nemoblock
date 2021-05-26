@@ -77,7 +77,7 @@ class Mesh:
                 f.write(
                     f"    hex ({b.p0.id} {b.p1.id} {b.p2.id} {b.p3.id} {b.p4.id} {b.p5.id} {b.p6.id} {b.p7.id})\n"
                 )
-                f.write(f"    ({b.cells_x0} {b.cells_x1} {b.cells_x2})\n")
+                f.write(f"    ({b.cells_x1} {b.cells_x2} {b.cells_x3})\n")
                 f.write(f"    {b.grading}\n")
             f.write(");\n\n")
             f.write("patches\n(\n")
@@ -122,9 +122,9 @@ class Block:
         self._p6_coords = p6
         self._p7_coords = p7
 
-        self._cells_x0 = 0
         self._cells_x1 = 0
         self._cells_x2 = 0
+        self._cells_x3 = 0
         self.grading = "simpleGrading (1 1 1)"
 
         self._p0 = None
@@ -155,7 +155,7 @@ class Block:
         """Create points and edges"""
         if self._created:
             raise RuntimeError("This block was already crated.")
-        if self._cells_x0 == 0 or self._cells_x1 == 0 or self._cells_x2 == 0:
+        if self._cells_x1 == 0 or self._cells_x2 == 0 or self._cells_x3 == 0:
             raise RuntimeError("Number of cells not defined.")
 
         if self._p0 is None:
@@ -184,9 +184,7 @@ class Block:
             )
         if self._p4 is None:
             self._p4 = self.mesh._add_point(
-                self._p4_coords[0],
-                self._p4_coords[1],
-                self._p4_coords[2]
+                self._p4_coords[0], self._p4_coords[1], self._p4_coords[2]
             )
         if self._p5 is None:
             self._p5 = self.mesh._add_point(
@@ -196,15 +194,11 @@ class Block:
             )
         if self._p6 is None:
             self._p6 = self.mesh._add_point(
-                self._p6_coords[0],
-                self._p6_coords[1],
-                self._p6_coords[2]
+                self._p6_coords[0], self._p6_coords[1], self._p6_coords[2]
             )
         if self._p7 is None:
             self._p7 = self.mesh._add_point(
-                self._p7_coords[0],
-                self._p7_coords[1],
-                self._p7_coords[2]
+                self._p7_coords[0], self._p7_coords[1], self._p7_coords[2]
             )
 
         if self.e0 is None:
@@ -235,7 +229,7 @@ class Block:
         self.mesh._add_block(self)
 
     def set_connection(self, other, pos):
-        """Set connection to other block. This works only if the 
+        """Set connection to other block. This works only if the
         coordinate systems have the same orientation!
 
         Args:
@@ -256,8 +250,8 @@ class Block:
             self.e2 = other.e1
             self.e6 = other.e5
             self.e7 = other.e4
-            self._cells_x0 = other.cells_x0
             self._cells_x1 = other.cells_x1
+            self._cells_x2 = other.cells_x2
         elif pos == "bottom":
             self._p0 = other._p4
             self._p1 = other._p5
@@ -267,8 +261,8 @@ class Block:
             self.e1 = other.e2
             self.e5 = other.e6
             self.e4 = other.e7
-            self._cells_x0 = other.cells_x0
             self._cells_x1 = other.cells_x1
+            self._cells_x2 = other.cells_x2
         elif pos == "left":
             self._p0 = other._p1
             self._p3 = other._p2
@@ -278,8 +272,8 @@ class Block:
             self.e7 = other.e6
             self.e8 = other.e9
             self.e11 = other.e10
-            self._cells_x1 = other.cells_x1
             self._cells_x2 = other.cells_x2
+            self._cells_x3 = other.cells_x3
         elif pos == "right":
             self._p1 = other._p0
             self._p2 = other._p3
@@ -289,8 +283,8 @@ class Block:
             self.e6 = other.e7
             self.e9 = other.e8
             self.e10 = other.e11
-            self._cells_x1 = other.cells_x1
             self._cells_x2 = other.cells_x2
+            self._cells_x3 = other.cells_x3
         elif pos == "front":
             self._p0 = other._p3
             self._p1 = other._p2
@@ -300,8 +294,8 @@ class Block:
             self.e3 = other.e2
             self.e8 = other.e11
             self.e9 = other.e10
-            self._cells_x0 = other.cells_x0
-            self._cells_x2 = other.cells_x2
+            self._cells_x1 = other.cells_x1
+            self._cells_x3 = other.cells_x3
         elif pos == "back":
             self._p3 = other._p0
             self._p2 = other._p1
@@ -311,31 +305,17 @@ class Block:
             self.e2 = other.e3
             self.e11 = other.e8
             self.e10 = other.e9
-            self._cells_x0 = other.cells_x0
-            self._cells_x2 = other.cells_x2
+            self._cells_x1 = other.cells_x1
+            self._cells_x3 = other.cells_x3
         else:
             raise ValueError(
                 "This position does not exist.\nThe following values are allowed for 'pos': top, bottom, left, right, front, back"
             )
 
-    def set_number_of_cell(self, x0=10, x1=10, x2=10):
-        # if self._cells_x0 != 0 or self._cells_x1 != 0 or self.cells_x2 != 0:
-        #     raise RuntimeError("Values were already set or derived from a connected block.")
-        self._cells_x0 = x0
+    def set_number_of_cell(self, x1=10, x2=10, x3=10):
         self._cells_x1 = x1
         self._cells_x2 = x2
-
-    @property
-    def cells_x0(self):
-        return self._cells_x0
-
-    @cells_x0.setter
-    def cells_x0(self, val):
-        if self._cells_x0 != 0:
-            raise RuntimeError(
-                "This value was already set or derived from a connected block."
-            )
-        self._cells_x0 = val
+        self._cells_x3 = x3
 
     @property
     def cells_x1(self):
@@ -361,125 +341,17 @@ class Block:
             )
         self._cells_x2 = val
 
-    # TODO remove this?
-    # @property
-    # def edge_frontside_bottom(self):
-    #     if self._created:
-    #         return self.e0
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
+    @property
+    def cells_x3(self):
+        return self._cells_x3
 
-    # @property
-    # def edge_frontside_top(self):
-    #     if self._created:
-    #         return self.e3
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_frontside_left(self):
-    #     if self._created:
-    #         return self.e8
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_edge_frontside_right(self):
-    #     if self._created:
-    #         return self.e9
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_leftside_bottom(self):
-    #     if self._created:
-    #         return self.e4
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_leftside_top(self):
-    #     if self._created:
-    #         return self.e7
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_leftside_front(self):
-    #     if self._created:
-    #         return self.e8
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_leftside_back(self):
-    #     if self._created:
-    #         return self.e11
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_leftside_back(self):
-    #     if self._created:
-    #         return self.e11
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_rightside_bottom(self):
-    #     if self._created:
-    #         return self.e5
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_rightside_top(self):
-    #     if self._created:
-    #         return self.e10
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_rightside_front(self):
-    #     if self._created:
-    #         return self.e9
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_rightside_back(self):
-    #     if self._created:
-    #         return self.e10
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_backside_bottom(self):
-    #     if self._created:
-    #         return self.e1
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_backside_top(self):
-    #     if self._created:
-    #         return self.e2
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_backside_left(self):
-    #     if self._created:
-    #         return self.e11
-    #     else:
-    #         raise RuntimeError("Edges were not created.")
-
-    # @property
-    # def edge_backside_right(self):
-        # if self._created:
-        #     return self.e10
-        # else:
-        #     raise RuntimeError("Edges were not created.")
+    @cells_x3.setter
+    def cells_x3(self, val):
+        if self._cells_x3 != 0:
+            raise RuntimeError(
+                "This value was already set or derived from a connected block."
+            )
+        self._cells_x3 = val
 
     @property
     def p0(self):
@@ -619,11 +491,25 @@ class Block:
             raise RuntimeError("This block was not created yet.")
         return [self._p2, self._p1, self._p0, self._p3]
 
+    @face_bottom.setter
+    def face_bottom(self, val):
+        self._p3 = val[0]
+        self._p0 = val[1]
+        self._p1 = val[2]
+        self._p2 = val[3]
+
     @property
     def face_top(self):
         if not self._created:
             raise RuntimeError("This block was not created yet.")
         return [self._p7, self._p4, self._p5, self._p6]
+
+    @face_top.setter
+    def face_top(self, val):
+        self._p6 = val[0]
+        self._p5 = val[1]
+        self._p4 = val[2]
+        self._p7 = val[3]
 
 
 @dataclass
@@ -656,8 +542,6 @@ class Patch:
 
     def add_face(self, face):
         self.faces.append(face)
-
-
 
 
 def boundary_layer(

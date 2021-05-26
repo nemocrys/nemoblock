@@ -40,16 +40,16 @@ wall.add_face(b1.face_back)
 # create second block on top of it
 b2 = nb.Block(mesh)  # raw block
 b2.set_connection(b1, "bottom")  # on top of b1
+# alternatively you could use the faces to set this connection
+# b2.face_bottom = b1.face_top
+# b2.set_number_of_cell(10, 10, 5) # in this case set all numbers of cells
+
 # define missing points
-b2.front_left_top = [
-    0,
-    0,
-    2,
-]  # alternatively, this point can be set by b2.p5 = [1, 0 ,2]
+b2.p4 = [0, 0, 2]
 b2.p5 = [1, 0, 2]
 b2.p6 = [1, 1, 2]
 b2.p7 = [0, 1, 2]
-b2.cells_x2 = 5  # the others were derived from b1
+b2.cells_x3 = 5  # the others were derived from b1
 b2.create()
 
 wall.add_face(b2.face_front)
@@ -65,7 +65,7 @@ b3.p1 = [2, 0, 1]
 b3.p2 = [2, 1, 1]
 b3.p5 = [2, 0, 2]
 b3.p6 = [2, 1, 2]
-b3.cells_x0 = 5  # the others were derived from b2
+b3.cells_x1 = 5  # the others were derived from b2
 b3.create()
 
 wall.add_face(b3.face_front)

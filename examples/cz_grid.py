@@ -48,17 +48,17 @@ plot_spline(s_cr, [0, r_crystal], fig, ax)
 
 # cylinder c1
 c1_r_top = r_crystal
-c1_z_top = - h_melt/2 + h_melt*1/20
-c1_r_bt = r_crystal*1.2
+c1_z_top = -h_melt / 2 + h_melt * 1 / 20
+c1_r_bt = r_crystal * 1.2
 
 # ring r1
-r1_r_top = r_crystal + (r_crucible - r_crystal)*1/3
+r1_r_top = r_crystal + (r_crucible - r_crystal) * 1 / 3
 r1_z_top = c1_z_top
 r1_r_bt = r_crucible * 5 / 6
 
 # ring r2
 r2_r_bt = r_crucible
-r2_r_top = r_crystal + (r_crucible - r_crystal)*1/2
+r2_r_top = r_crystal + (r_crucible - r_crystal) * 1 / 2
 r2_z_top = s_fs(r2_r_top)
 
 # cylinder c2
@@ -163,9 +163,9 @@ top_surf.faces += c2.surf_top
 
 if not one_mesh_only:
     mesh.write()
-    if os.path.exists('./system/blockMeshDict_melt'):
-        os.remove('./system/blockMeshDict_melt')
-    os.rename('./system/blockMeshDict', './system/blockMeshDict_melt')
+    if os.path.exists("./system/blockMeshDict_melt"):
+        os.remove("./system/blockMeshDict_melt")
+    os.rename("./system/blockMeshDict", "./system/blockMeshDict_melt")
     mesh = Mesh()
 
 ####################
@@ -189,6 +189,6 @@ out_surf.faces += c3.surf_top
 
 mesh.write()
 if not one_mesh_only:
-    if os.path.exists('./system/blockMeshDict_crys'):
-        os.remove('./system/blockMeshDict_crys')
-    os.rename('./system/blockMeshDict', './system/blockMeshDict_crys')
+    if os.path.exists("./system/blockMeshDict_crys"):
+        os.remove("./system/blockMeshDict_crys")
+    os.rename("./system/blockMeshDict", "./system/blockMeshDict_crys")

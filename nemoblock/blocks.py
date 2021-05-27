@@ -17,8 +17,8 @@ class Mesh:
 
         self.patches = []
 
-    def _add_point(self, x0, x1, x2):
-        p = Point(x0, x1, x2, self.point_count)
+    def _add_point(self, x1, x2, x3):
+        p = Point(x1, x2, x3, self.point_count)
         self.point_count += 1
         self.points.append(p)
         return p
@@ -56,7 +56,7 @@ class Mesh:
             )
             f.write("vertices\n(\n")
             for p in self.points:
-                f.write(f"    ({p.x0} {p.x1} {p.x2})\n")
+                f.write(f"    ({p.x1} {p.x2} {p.x3})\n")
             f.write(");\n\n")
             f.write("edges\n(\n")
             for e in self.edges:
@@ -516,10 +516,15 @@ class Block:
 class Point:
     """Point in the mesh."""
 
-    x0: float
     x1: float
     x2: float
+    x3: float
     id: int = -1
+
+    def update_coordinates(self, coords):
+        self.x1 = coords[0]
+        self.x2 = coords[1]
+        self.x3 = coords[2]
 
 
 class Edge:

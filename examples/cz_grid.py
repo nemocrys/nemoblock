@@ -57,12 +57,8 @@ r1_z_top = c1_z_top
 r1_r_bt = r_crucible * 5 / 6
 
 # ring r2
-r2_r_bt = r_crucible
 r2_r_top = r_crystal + (r_crucible - r_crystal) * 1 / 2
-r2_z_top = s_fs(r2_r_top)
 
-# cylinder c2
-c2_r_top = r_crystal
 
 ####################
 # Mesh sizes
@@ -83,60 +79,51 @@ res_z_c2, grading_top = boundary_layer(
 ####################
 # Blocks (defined as cylinders & rings)
 c1 = create_cylinder(
-    mesh, c1_r_top, c1_r_bt, c1_z_top, s_bt, res_r_c1, res_phi, res_z_c1
+    mesh, [c1_r_top, c1_z_top], [c1_r_bt, s_bt(c1_r_bt)], res_r_c1, res_phi, res_z_c1
 )
+c1.set_spline_surface(s_bt, "bottom")
 c2 = create_cylinder(
     mesh,
-    c2_r_top,
-    c1_r_top,
-    s_ph,
-    c1_z_top,
+    [r_crystal, s_ph(r_crystal)],
+    [c1_r_top, c1_z_top],
     res_r_c1,
     res_phi,
     res_z_c2,
     cylinder_below=c1,
 )
+c2.set_spline_surface(s_ph, "top")
 r1 = create_ring(
     mesh,
-    r1_r_top,
-    c1_r_top,
-    r1_r_bt,
-    c1_r_bt,
-    r1_z_top,
-    s_bt,
+    [r1_r_top, r1_z_top],
+    [r1_r_bt, s_bt(r1_r_bt)],
     c1.surf_rad,
     res_r_r1,
     res_phi,
     res_z_c1,
 )
+r1.set_spline_surface(s_bt, "bottom")
 r2 = create_ring(
     mesh,
-    r2_r_top,
-    r1_r_top,
-    r2_r_bt,
-    r1_r_bt,
-    r2_z_top,
-    s_bt,
+    [r2_r_top, s_fs(r2_r_top)],
+    [r_crucible, s_bt(r_crucible)],
     r1.surf_rad,
     res_z_c2,
     res_phi,
     res_z_c1,
-    spline_outside=s_fs,
 )
+r2.set_spline_surface(s_bt, "bottom")
+r2.set_spline_surface(s_fs, "side")
 r3 = create_ring(
     mesh,
-    r2_r_top,
-    c2_r_top,
-    r1_r_top,
-    c1_r_top,
-    s_fs,
-    r1_z_top,
+    [r2_r_top, s_fs(r2_r_top)],
+    [r1_r_top, r1_z_top],
     c2.surf_rad,
     res_r_r1,
     res_phi,
     res_z_c2,
     faces_outside=r2.surf_top,
 )
+r3.set_spline_surface(s_fs, "top")
 
 ####################
 # Grading
@@ -173,9 +160,16 @@ if not one_mesh_only:
 res_z_c3, grading_crys = boundary_layer(
     l_crystal, "xmin", smallest_element, layer_thickness=0.04, growth_rate=1.5
 )
-
-
-c3 = create_cylinder(mesh, c2_r_top, c2_r_top, s_cr, s_ph, res_r_c1, res_phi, res_z_c3)
+c3 = create_cylinder(
+    mesh,
+    [r_crystal, s_cr(r_crystal)],
+    [r_crystal, s_ph(r_crystal)],
+    res_r_c1,
+    res_phi,
+    res_z_c3,
+)
+c3.set_spline_surface(s_cr, "top")
+c3.set_spline_surface(s_ph, "bottom")
 c3.set_grading_axial(grading_crys)
 
 # Patches

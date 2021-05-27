@@ -80,23 +80,48 @@ res_z_c2, grading_top = boundary_layer(
 c1 = create_cylinder(
     mesh, [c1_r_top, c1_z_top], [c1_r_bt, s_bt(c1_r_bt)], res_r_c1, res_phi, res_z_c1
 )
-c1.set_spline_surface(s_bt, 'bottom')
+c1.set_spline_surface(s_bt, "bottom")
 c2 = create_cylinder(
-    mesh, [r_feed, s_mf(r_feed)], [c1_r_top, c1_z_top], res_r_c1, res_phi, res_z_c2, cylinder_below=c1,
+    mesh,
+    [r_feed, s_mf(r_feed)],
+    [c1_r_top, c1_z_top],
+    res_r_c1,
+    res_phi,
+    res_z_c2,
+    cylinder_below=c1,
 )
 r1 = create_ring(
-    mesh, [r1_r_top, r1_z_top], [r1_r_bt, s_bt(r1_r_bt)], c1.surf_rad, res_r_r1, res_phi, res_z_c1,
+    mesh,
+    [r1_r_top, r1_z_top],
+    [r1_r_bt, s_bt(r1_r_bt)],
+    c1.surf_rad,
+    res_r_r1,
+    res_phi,
+    res_z_c1,
 )
-r1.set_spline_surface(s_bt, 'bottom')
+r1.set_spline_surface(s_bt, "bottom")
 r2 = create_ring(
-    mesh, [r2_r_top, s_fs(r2_r_top)], [r_crystal, s_bt(r_crystal)], r1.surf_rad, res_z_c2, res_phi, res_z_c1,
+    mesh,
+    [r2_r_top, s_fs(r2_r_top)],
+    [r_crystal, s_bt(r_crystal)],
+    r1.surf_rad,
+    res_z_c2,
+    res_phi,
+    res_z_c1,
 )
-r2.set_spline_surface(s_bt, 'bottom')
-r2.set_spline_surface(s_fs, 'side')
+r2.set_spline_surface(s_bt, "bottom")
+r2.set_spline_surface(s_fs, "side")
 r3 = create_ring(
-    mesh, [r2_r_top, s_fs(r2_r_top)], [r1_r_top, r1_z_top], c2.surf_rad, res_r_r1, res_phi, res_z_c2, faces_outside=r2.surf_top,
+    mesh,
+    [r2_r_top, s_fs(r2_r_top)],
+    [r1_r_top, r1_z_top],
+    c2.surf_rad,
+    res_r_r1,
+    res_phi,
+    res_z_c2,
+    faces_outside=r2.surf_top,
 )
-r3.set_spline_surface(s_fs, 'top')
+r3.set_spline_surface(s_fs, "top")
 
 ####################
 # Grading
@@ -164,16 +189,30 @@ res_z_c3, grading_crys = boundary_layer(
 )
 
 # blocks
-c3 = create_cylinder(mesh, [c1_r_bt, s_bt(c1_r_bt)], [c1_r_bt, c3_z_bt], res_r_c1, res_phi, res_z_c3)
-c3.set_spline_surface(s_bt, 'top')
+c3 = create_cylinder(
+    mesh, [c1_r_bt, s_bt(c1_r_bt)], [c1_r_bt, c3_z_bt], res_r_c1, res_phi, res_z_c3
+)
+c3.set_spline_surface(s_bt, "top")
 r4 = create_ring(
-    mesh, [r1_r_bt, s_bt(r1_r_bt)], [r1_r_bt, c3_z_bt], c3.surf_rad, res_r_r1, res_phi, res_z_c3,
+    mesh,
+    [r1_r_bt, s_bt(r1_r_bt)],
+    [r1_r_bt, c3_z_bt],
+    c3.surf_rad,
+    res_r_r1,
+    res_phi,
+    res_z_c3,
 )
-r4.set_spline_surface(s_bt, 'top')
+r4.set_spline_surface(s_bt, "top")
 r5 = create_ring(
-    mesh, [r_crystal, s_bt(r_crystal)], [r_crystal, c3_z_bt], r4.surf_rad, res_z_c2, res_phi, res_z_c3,
+    mesh,
+    [r_crystal, s_bt(r_crystal)],
+    [r_crystal, c3_z_bt],
+    r4.surf_rad,
+    res_z_c2,
+    res_phi,
+    res_z_c3,
 )
-r5.set_spline_surface(s_bt, 'top')
+r5.set_spline_surface(s_bt, "top")
 b1 = Block(mesh)
 b1.set_connection(c3.core, "top")
 b1.face_front = c3.ring.blocks[0].face_bottom
@@ -198,7 +237,14 @@ b2.p3 = cartesian(c1_r_bt, 270, b2_z_bt)
 b2.set_number_of_cell(c3.core.cells_x1, c3.core.cells_x1, res_z_b2)
 b2.create()
 r6 = create_ring(
-    mesh, [r1_r_bt, b1_z_bt], [r_crystal / 2, b2_z_bt], [b2.face_front, b2.face_right, b2.face_back, b2.face_left], res_r_r1, res_phi, res_z_b2, ring_on_top=r4,
+    mesh,
+    [r1_r_bt, b1_z_bt],
+    [r_crystal / 2, b2_z_bt],
+    [b2.face_front, b2.face_right, b2.face_back, b2.face_left],
+    res_r_r1,
+    res_phi,
+    res_z_b2,
+    ring_on_top=r4,
 )
 for b in r6.blocks:
     b.e5.type = "line"
@@ -216,14 +262,29 @@ b3.p3.x3 = b3_z_bt
 b3.set_number_of_cell(c3.core.cells_x1, c3.core.cells_x1, res_r_r1)
 b3.create()
 r7 = create_ring(
-    mesh, [r_crystal, b1_z_bt], [r_crystal, b3_z_bt], r6.surf_rad, res_z_c2, res_phi, res_z_b2, ring_on_top=r5,
+    mesh,
+    [r_crystal, b1_z_bt],
+    [r_crystal, b3_z_bt],
+    r6.surf_rad,
+    res_z_c2,
+    res_phi,
+    res_z_b2,
+    ring_on_top=r5,
 )
-c_b3_r7 = Cylinder(b3, r7, [], [], [])  # just empty lists because these surfaces are not needed, they're internal
+c_b3_r7 = Cylinder(
+    b3, r7, [], [], []
+)  # just empty lists because these surfaces are not needed, they're internal
 
 c4 = create_cylinder(
-    mesh, [r_crystal, b3_z_bt], [r_crystal, s_cr(r_crystal)], res_z_c2, res_phi, res_z_c4, cylinder_on_top=c_b3_r7,
+    mesh,
+    [r_crystal, b3_z_bt],
+    [r_crystal, s_cr(r_crystal)],
+    res_z_c2,
+    res_phi,
+    res_z_c4,
+    cylinder_on_top=c_b3_r7,
 )
-c4.set_spline_surface(s_cr, 'bottom')
+c4.set_spline_surface(s_cr, "bottom")
 
 # grading
 r5.set_grading_radial(grading_top)

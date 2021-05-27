@@ -102,7 +102,7 @@ b2.set_number_of_cell(10, 10, 5)
 
 Only use this if your mesh topology requires it, because it is prone to errors.
 
-Eventually, you can create a patch, e.g. an inlet and export you blockMeshDict:
+Eventually, you can create a patch, e.g. an inlet and export your blockMeshDict:
 ```python
 inlet = nb.Patch(mesh, "inlet inlet")
 inlet.add_face(b1.face_bottom)

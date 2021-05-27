@@ -52,12 +52,12 @@ c1_z_top = -h_melt / 2 + h_melt * 1 / 20
 c1_r_bt = r_crystal * 1.2
 
 # ring r1
-r1_r_top = r_crystal + (r_crucible - r_crystal) * 1 / 3
+r1_r_top = r_crystal + (r_crucible - r_crystal) * 0.4
 r1_z_top = c1_z_top
-r1_r_bt = r_crucible * 5 / 6
+r1_r_bt = r_crucible * 0.92
 
 # ring r2
-r2_r_top = r_crystal + (r_crucible - r_crystal) * 1 / 2
+r2_r_top = r_crystal + (r_crucible - r_crystal) * 0.5
 
 
 ####################

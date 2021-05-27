@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from dataclasses import dataclass
-from scipy.interpolate import interp1d
+import scipy.interpolate as interpolate
 
 from .blocks import *
 
@@ -243,7 +243,38 @@ def spline(points, kind="cubic"):
         kind (str, optional): spline type (linear / cubic)
     """
     points = np.array(points)
-    return interp1d(points[:, 0], points[:, 1], kind=kind)
+    return interpolate.interp1d(points[:, 0], points[:, 1], kind=kind)
+
+
+# inspired by https://github.com/kawache/Python-B-spline-examples
+def b_spline(control_points, plot=False, res=100):
+    """Create a spline curve that does not go through the control points.
+
+    Args:
+        control_points (list): list of points [[x0, y0], [x1, y1], ...]
+        plot (bool): Plot the spline and the control points
+        res (int): Resolution. Defaults to 100.
+
+    Returns:
+        array: [x coordinates, y coordinates]
+    """
+    control_points = np.array(control_points)
+    t = np.concatenate(
+        [[0, 0, 0], np.linspace(0, 1, control_points.shape[0] - 2), [1, 1, 1]]
+    )  # knots
+
+    spline = interpolate.splev(np.linspace(0, 1, res), [t, control_points.T, 3])
+
+    if plot:
+        fig, ax = plt.subplots(1, 1)
+        ax.plot(spline[0], spline[1], label="b-spline curve")
+        ax.plot(
+            control_points[:, 0], control_points[:, 1], "x--", label="control points"
+        )
+        ax.legend()
+        ax.grid(linestyle=":")
+        plt.show()
+    return np.array(spline)
 
 
 def plot_spline(sp, r, fig=None, ax=None):

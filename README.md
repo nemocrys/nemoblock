@@ -1,4 +1,5 @@
 # nemoblock
+
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## Project description
@@ -64,17 +65,20 @@ b1.grading = "simpleGrading (1 1 1)"  # this is the default
 ```
 
 When all the points are defined you have to "create" the block:
+
 ```python
 b1.create()
 ```
 
 This creates the edges e0 to e11 that can then be modified, e.g. to form an arc:
+
 ```python
 b1.e0.type = "arc"
 b1.e0.points.append([0.5, 0.3, 0])
 ```
 
 If you add additional blocks you have to set the relations:
+
 ```python
 b2 = nb.Block(mesh)  # raw block
 b2.set_connection(b1, "bottom")  # on top of b1
@@ -103,12 +107,17 @@ b2.set_number_of_cell(10, 10, 5)
 Only use this if your mesh topology requires it, because it is prone to errors.
 
 Eventually, you can create a patch, e.g. an inlet and export your blockMeshDict:
+
 ```python
 inlet = nb.Patch(mesh, "inlet inlet")
 inlet.add_face(b1.face_bottom)
 
 mesh.write()
 ```
+
+The resulting mesh looks like this:
+
+![example mesh](images/blocks_01.png)
 
 ## Examples
 
@@ -122,7 +131,7 @@ nemoblock is published under the [GPLv3 license](https://www.gnu.org/licenses/gp
 
 If you use nemoblock in your research, we would be grateful if you cite us using the information provided here:
 
-TODO Zenodo / ResearchGate DOI for presentation on OpenFOAM Workshop
+...
 
 ## Acknowledgements
 

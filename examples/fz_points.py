@@ -1,3 +1,4 @@
+"""Geometry definition for fz_grid.py"""
 import numpy as np
 import matplotlib.pyplot as plt
 

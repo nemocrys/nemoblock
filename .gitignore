@@ -3,3 +3,4 @@ __pycache__/
 system/
 constant/
 *.foam
+nemoblock.egg-info/

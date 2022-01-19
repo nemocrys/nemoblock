@@ -121,7 +121,9 @@ The resulting mesh looks like this:
 
 ## Examples
 
-Examples, e.g. with grading for boundary layers or much more complex meshes generated using pre-defined cylinders and rings, can be found in the examples directory.
+Examples, e.g. with grading for boundary layers or much more complex meshes generated using pre-defined cylinders and rings, can be found in the examples directory. This includes the setup for a mesh with the following structure:
+
+![example mesh](images/floating-zone_blocks.png)
 
 ## License
 

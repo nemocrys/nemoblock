@@ -14,23 +14,23 @@ This is a slightly more complex examples showing how to work with blocks. The re
 
 ![example mesh](../images/blocks_02.png)
 
+# ds_grid
+
+This is a more advanced mesh used for Directional Solidification growth simulation consisting out of 8 blocks:
+
+![example mesh](../images/grid_ds.png)
+
+The geometry parameters are defined in *ds_points.py*, the mesh is generated with *ds_grid.py*. The mesh looks like this:
+
+![example mesh](../images/gridstart_ds.png)
+
 # cz_grid
 
 This is a complex mesh used for Czochralski growth simulation consisting out of 27 blocks:
 
-![example mesh](../images/czochralski_blocks.png)
+![example mesh](../images/grid_cz.png)
 
 The geometry parameters are defined in *cz_points.py*, the mesh is generated with *cz_grid.py*. The mesh looks like this:
 
-![example mesh](../images/czochralski_mesh.png)
+![example mesh](../images/gridstart_cz.png)
 
-# fz_grid
-
-This is a complex mesh used for Floating Zone growth simulation consisting out of 51 blocks:
-
-![example mesh](../images/floating-zone_blocks.png)
-
-The geometry parameters are defined in *fz_points.py*, the mesh is generated with *fz_grid.py*. The mesh looks like this:
-
-![example mesh](../images/floating-zone_mesh-1.png)
-![example mesh](../images/floating-zone_mesh-2.png)

@@ -1,4 +1,3 @@
-"""Geometry definition for cz_grid.py"""
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
@@ -6,10 +5,11 @@ from nemoblock import *
 
 ####################
 # parameters
-r_crucible = 0.2
+r_crucible = 0.3
 r_crystal = 0.1
-l_crystal = 0.6
+l_crystal = 0.1
 l_conus = 0.1
+z_phase_if = 0.0  # -0.015  # phase boundary max deflection
 
 h_melt = 0.2
 
@@ -17,10 +17,26 @@ n_samples = 100
 
 ####################
 # boundary layer
-smallest_element = 0.0003
-layer_thickness = 0.04
-growth_rate = 1.2
+smallest_element_crucible = 0.0018
+layer_thickness_crucible = 0.025
+growth_rate_crucible = 1.4
 
+smallest_element_top = 0.0018
+layer_thickness_top = 0.025
+growth_rate_top = 1.4
+
+smallest_element_meniscus = 0.003
+layer_thickness_meniscus = 0.02
+growth_rate_meniscus = 1.5
+
+
+smallest_element_crystal_bottom = smallest_element_crucible
+layer_thickness_crystal_bottom = 0.04
+growth_rate_crystal_bottom = 1.4
+
+smallest_element_crystal_side = smallest_element_crucible
+layer_thickness_crystal_side = r_crystal*0.15
+growth_rate_crystal_side = 1.5
 ####################
 # meniscus parameters
 beta0 = 11  # deg
@@ -56,20 +72,20 @@ s_fs = np.concatenate(
 ####################
 # bottom (crucible)
 control_points = [
-    [0, -0.2],
-    [0.2 * 0.5, -0.2],
-    [0.2 * 0.8, -0.2],
-    [0.2, -0.15],
-    [0.2, 0],
+    [0, -h_melt],
+    [r_crucible * 0.2, -h_melt],
+    [r_crucible * 0.7, -h_melt],
+    [r_crucible, -h_melt*0.6],
+    [r_crucible, 0],
 ]
 s_bt = b_spline(control_points, plot=False, res=n_samples).T
 
 ####################
 # phase interface
 control_points = [
-    [0, -0.015],
-    [r_crystal * 0.2, -0.015],
-    [r_crystal * 0.8, -0.01],
+    [0, z_phase_if],
+    [r_crystal * 0.2, z_phase_if],
+    [r_crystal * 0.8, z_phase_if*0.6],
     [r_crystal, 0],
 ]
 s_ph = b_spline(control_points, plot=False, res=n_samples).T

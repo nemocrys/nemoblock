@@ -20,7 +20,7 @@ This is a more advanced mesh used for Directional Solidification growth simulati
 
 ![example mesh](../images/grid_ds.png)
 
-The geometry parameters are defined in *ds_points.py*, the mesh is generated with *ds_grid.py*. The mesh looks like this:
+The geometry parameters are defined in *ds_points.py*, the mesh is generated with *ds_grid.py*. The mesh looks like this (vertical cut):
 
 ![example mesh](../images/gridstart_ds.png)
 
@@ -30,7 +30,7 @@ This is a complex mesh used for Czochralski growth simulation consisting out of 
 
 ![example mesh](../images/grid_cz.png)
 
-The geometry parameters are defined in *cz_points.py*, the mesh is generated with *cz_grid.py*. The mesh looks like this:
+The geometry parameters are defined in *cz_points.py*, the mesh is generated with *cz_grid.py*. The mesh looks like this (vertical cut):
 
 ![example mesh](../images/gridstart_cz.png)
 

@@ -6,6 +6,14 @@
 
 nemoblock provides utilities to generate blockMeshDicts for structured mesh generation in OpenFOAM. It manages the numbering of the points, the orientation of the surfaces and the connections between the blocks. In this way it helps the user to focus on the most important point: generating high quality meshes.
 
+The project is developed and maintained by the [**Model experiments group**](https://www.ikz-berlin.de/en/research/materials-science/section-fundamental-description#c486) at the Leibniz Institute for Crystal Growth (IKZ).
+
+### Referencing
+
+If you use this code in your research, please cite our article:
+
+> TODO
+
 ## Prerequisites
 
 nemoblock requires Python >= 3.7. The following dependencies are installed automatically: matplotlib, numpy, scipy.
@@ -128,12 +136,6 @@ Examples, e.g. with grading for boundary layers or much more complex meshes gene
 ## License
 
 nemoblock is published under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.html).
-
-## Referencing
-
-If you use nemoblock in your research, we would be grateful if you cite us using the information provided here:
-
-...
 
 ## Acknowledgements
 

@@ -28,12 +28,10 @@ pip install --upgrade scipy
 
 ## Installation
 
-nemoblock is not listed on the python package index yet. To use it, you have to clone the repository and install it manually with pip:
+The latest release can be installed using pip:
 
-```shell
-git clone https://github.com/nemocrys/nemoblock.git
-cd nemoblock
-pip install -e ./
+```
+pip install nemoblock
 ```
 
 ## Usage

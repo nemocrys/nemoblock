@@ -35,7 +35,7 @@ layer_thickness_crystal_bottom = 0.04
 growth_rate_crystal_bottom = 1.4
 
 smallest_element_crystal_side = smallest_element_crucible
-layer_thickness_crystal_side = r_crystal*0.15
+layer_thickness_crystal_side = r_crystal * 0.15
 growth_rate_crystal_side = 1.5
 ####################
 # meniscus parameters
@@ -75,7 +75,7 @@ control_points = [
     [0, -h_melt],
     [r_crucible * 0.2, -h_melt],
     [r_crucible * 0.7, -h_melt],
-    [r_crucible, -h_melt*0.6],
+    [r_crucible, -h_melt * 0.6],
     [r_crucible, 0],
 ]
 s_bt = b_spline(control_points, plot=False, res=n_samples).T
@@ -85,7 +85,7 @@ s_bt = b_spline(control_points, plot=False, res=n_samples).T
 control_points = [
     [0, z_phase_if],
     [r_crystal * 0.2, z_phase_if],
-    [r_crystal * 0.8, z_phase_if*0.6],
+    [r_crystal * 0.8, z_phase_if * 0.6],
     [r_crystal, 0],
 ]
 s_ph = b_spline(control_points, plot=False, res=n_samples).T

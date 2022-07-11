@@ -18,8 +18,8 @@ res_h_melt = 14
 # geometry
 
 h_phase_if_edges = 0.06
-h_phase_if_center = 0.06 # 0.08
-h_phase_if_side_mid = 0.06 # 0.07
+h_phase_if_center = 0.06  # 0.08
+h_phase_if_side_mid = 0.06  # 0.07
 
 container_d = 0.2
 container_h = 0.12

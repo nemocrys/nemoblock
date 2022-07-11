@@ -1,10 +1,11 @@
 "Example for creating blocks. Similar to the code in the main readme."
 
 from nemoblock import *
+
 mesh = Mesh()
 inlet = Patch(mesh, "inlet inlet1")
 b1 = Block(
-    mesh, 
+    mesh,
     [0, 0, 0],
     [1, 0, 0],
     [1, 1, 0],
@@ -21,7 +22,7 @@ b1.e0.points.append([0.5, 0.3, 0])
 inlet.add_face(b1.face_bottom)
 b2 = Block(mesh)
 b2.set_connection(b1, "bottom")  # on top of b1
-b2.p4 = [0, 0, 2]  
+b2.p4 = [0, 0, 2]
 b2.p5 = [1, 0, 2]
 b2.p6 = [1, 1, 2]
 b2.p7 = [0, 1, 2]

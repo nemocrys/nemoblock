@@ -54,7 +54,7 @@ c1_r_bt = r_crystal * 1.2
 
 # ring r1
 r1_r_top = r_crystal + (r_crucible - r_crystal) * 0.4
-r1_z_top = c1_z_top + h_melt/20
+r1_z_top = c1_z_top + h_melt / 20
 r1_r_bt = r_crucible * 0.92
 
 # ring r2
@@ -70,16 +70,28 @@ res_phi = 40
 # res_z_c2 = 20  # applies also for r2, r3
 ####################
 res_z_c1, grading_bottom = boundary_layer(
-    h_melt / 2, "xmin", smallest_element_crucible, layer_thickness_crucible, growth_rate_crucible
+    h_melt / 2,
+    "xmin",
+    smallest_element_crucible,
+    layer_thickness_crucible,
+    growth_rate_crucible,
 )
 res_z_c2, grading_top = boundary_layer(
     h_melt / 2, "xmax", smallest_element_top, layer_thickness_top, growth_rate_top
 )
 res_r_r1, grading_meniscus = boundary_layer(
-    h_melt / 2, "xmin", smallest_element_meniscus, layer_thickness_meniscus, growth_rate_meniscus
+    h_melt / 2,
+    "xmin",
+    smallest_element_meniscus,
+    layer_thickness_meniscus,
+    growth_rate_meniscus,
 )
 res_r_c1, grading_crys_rad = boundary_layer(
-    r_crystal * 0.5, "xmax", smallest_element_crystal_side, layer_thickness_crystal_side, growth_rate_crystal_side
+    r_crystal * 0.5,
+    "xmax",
+    smallest_element_crystal_side,
+    layer_thickness_crystal_side,
+    growth_rate_crystal_side,
 )
 ####################
 # Blocks (defined as cylinders & rings)
@@ -168,7 +180,11 @@ if not one_mesh_only:
 ####################
 # crystal
 res_z_c3, grading_crys = boundary_layer(
-    l_crystal + l_conus, "xmin", smallest_element_crystal_bottom, layer_thickness_crystal_bottom, growth_rate_crystal_bottom
+    l_crystal + l_conus,
+    "xmin",
+    smallest_element_crystal_bottom,
+    layer_thickness_crystal_bottom,
+    growth_rate_crystal_bottom,
 )
 c3 = create_cylinder(
     mesh,

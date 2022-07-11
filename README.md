@@ -38,7 +38,7 @@ pip install nemoblock
 
 nemoblock follows the naming conventions in the [OpenFOAM user guide](https://www.openfoam.com/documentation/user-guide/4-mesh-generation-and-conversion/4.3-mesh-generation-with-the-blockmesh-utility):
 
-![block naming, source: https://www.openfoam.com/documentation/user-guide/4-mesh-generation-and-conversion/4.3-mesh-generation-with-the-blockmesh-utility](block-naming.png)
+<img src="https://raw.githubusercontent.com/nemocrys/nemoblock/master/block-naming.png">
 
 To initialize nemoblock you have to create a mesh object:
 
@@ -123,13 +123,13 @@ mesh.write()
 
 The resulting mesh looks like this:
 
-![example mesh](images/blocks_01.png)
+<img src="https://raw.githubusercontent.com/nemocrys/nemoblock/master/images/blocks_01.png">
 
 ## Examples
 
 Examples, e.g. with grading for boundary layers or much more complex meshes generated using pre-defined cylinders and rings, can be found in the examples directory. This includes the setup for a mesh with the following structure:
 
-![example mesh](images/czochralski_blocks.png)
+<img src="https://raw.githubusercontent.com/nemocrys/nemoblock/master/images/grid_cz.png">
 
 ## License
 
@@ -139,7 +139,7 @@ nemoblock is published under the [GPLv3 license](https://www.gnu.org/licenses/gp
 
 [This project](https://www.researchgate.net/project/NEMOCRYS-Next-Generation-Multiphysical-Models-for-Crystal-Growth-Processes) has received funding from the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No 851768).
 
-<img src="https://raw.githubusercontent.com/nemocrys/pyelmer/master/EU-ERC.png">
+<img src="https://raw.githubusercontent.com/nemocrys/nemoblock/master/EU-ERC.png">
 
 ## Contribution
 

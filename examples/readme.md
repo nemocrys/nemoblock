@@ -37,5 +37,5 @@ The geometry parameters are defined in *cz_points.py*, the mesh is generated wit
 ## cz_2d
 
 This is a simple 2D mesh for Czochralski growth consisting of 7 blocks.
-
+![example mesh](../images/cz_2d_topology.png)
 ![example mesh](../images/cz_2d.png)

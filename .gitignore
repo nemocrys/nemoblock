@@ -4,3 +4,4 @@ system/
 constant/
 *.foam
 nemoblock.egg-info/
+blockTopology.vtu

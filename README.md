@@ -66,7 +66,7 @@ b1 = b1 = nb.Block(
 Then, you can set the number of cells in x1, x2 and x3 direction and modify the grading:
 
 ```python
-b1.set_number_of_cell(10, 10, 10)
+b1.set_number_of_cells(10, 10, 10)
 b1.grading = "simpleGrading (1 1 1)"  # this is the default
 ```
 
@@ -105,7 +105,7 @@ b2.face_top = b1.face_bottom
 # define missing points
 ...
 # set number of cells
-b2.set_number_of_cell(10, 10, 5) 
+b2.set_number_of_cells(10, 10, 5) 
 # In this case you have to provide the number of cells for all directions.
 # Make sure that this is conforming with b1!
 ```

@@ -33,7 +33,7 @@ b1 = Block(
     [container_r, container_r, h_phase_if_edges],
     [0, container_r, h_phase_if_side_mid],
 )
-b1.set_number_of_cell(res_d / 2, res_d / 2, res_h_crystal)
+b1.set_number_of_cells(res_d / 2, res_d / 2, res_h_crystal)
 b1.create()
 
 b2 = Block(mesh)
@@ -141,7 +141,7 @@ b5 = Block(
     [container_r, container_r, container_h],
     [0, container_r, container_h],
 )
-b5.set_number_of_cell(res_d / 2, res_d / 2, res_h_melt)
+b5.set_number_of_cells(res_d / 2, res_d / 2, res_h_melt)
 b5.create()
 
 b6 = Block(mesh)

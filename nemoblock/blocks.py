@@ -312,7 +312,7 @@ class Block:
                 "This position does not exist.\nThe following values are allowed for 'pos': top, bottom, left, right, front, back"
             )
 
-    def set_number_of_cell(self, x1=10, x2=10, x3=10):
+    def set_number_of_cells(self, x1=10, x2=10, x3=10):
         self._cells_x1 = x1
         self._cells_x2 = x2
         self._cells_x3 = x3
@@ -361,7 +361,10 @@ class Block:
     def p0(self, val):
         if self._p0 is not None:
             raise RuntimeError("This point exists already.")
-        self._p0 = self.mesh._add_point(val[0], val[1], val[2])
+        if type(val) == Point:
+            self._p0 = val
+        else:
+            self._p0 = self.mesh._add_point(val[0], val[1], val[2])
 
     @property
     def p1(self):
@@ -371,7 +374,10 @@ class Block:
     def p1(self, val):
         if self._p1 is not None:
             raise RuntimeError("This point exists already.")
-        self._p1 = self.mesh._add_point(val[0], val[1], val[2])
+        if type(val) == Point:
+            self._p1 = val
+        else:
+            self._p1 = self.mesh._add_point(val[0], val[1], val[2])
 
     @property
     def p2(self):
@@ -381,7 +387,10 @@ class Block:
     def p2(self, val):
         if self._p2 is not None:
             raise RuntimeError("This point exists already.")
-        self._p2 = self.mesh._add_point(val[0], val[1], val[2])
+        if type(val) == Point:
+            self._p2 = val
+        else:
+            self._p2 = self.mesh._add_point(val[0], val[1], val[2])
 
     @property
     def p3(self):
@@ -391,7 +400,10 @@ class Block:
     def p3(self, val):
         if self._p3 is not None:
             raise RuntimeError("This point exists already.")
-        self._p3 = self.mesh._add_point(val[0], val[1], val[2])
+        if type(val) == Point:
+            self._p3 = val
+        else:
+            self._p3 = self.mesh._add_point(val[0], val[1], val[2])
 
     @property
     def p4(self):
@@ -401,7 +413,10 @@ class Block:
     def p4(self, val):
         if self._p4 is not None:
             raise RuntimeError("This point exists already.")
-        self._p4 = self.mesh._add_point(val[0], val[1], val[2])
+        if type(val) == Point:
+            self._p4 = val
+        else:
+            self._p4 = self.mesh._add_point(val[0], val[1], val[2])
 
     @property
     def p5(self):
@@ -411,7 +426,10 @@ class Block:
     def p5(self, val):
         if self._p5 is not None:
             raise RuntimeError("This point exists already.")
-        self._p5 = self.mesh._add_point(val[0], val[1], val[2])
+        if type(val) == Point:
+            self._p5 = val
+        else:
+            self._p5 = self.mesh._add_point(val[0], val[1], val[2])
 
     @property
     def p6(self):
@@ -421,7 +439,10 @@ class Block:
     def p6(self, val):
         if self._p6 is not None:
             raise RuntimeError("This point exists already.")
-        self._p6 = self.mesh._add_point(val[0], val[1], val[2])
+        if type(val) == Point:
+            self._p6 = val
+        else:
+            self._p6 = self.mesh._add_point(val[0], val[1], val[2])
 
     @property
     def p7(self):
@@ -431,7 +452,10 @@ class Block:
     def p7(self, val):
         if self._p7 is not None:
             raise RuntimeError("This point exists already.")
-        self._p7 = self.mesh._add_point(val[0], val[1], val[2])
+        if type(val) == Point:
+            self._p7 = val
+        else:
+            self._p7 = self.mesh._add_point(val[0], val[1], val[2])
 
     @property
     def face_front(self):

@@ -8,13 +8,13 @@ This is the same example as in the main readme. The resulting mesh looks like th
 
 ![example mesh](../images/blocks_01.png)
 
-# blocks_02
+## blocks_02
 
 This is a slightly more complex examples showing how to work with blocks. The resulting mesh looks like this:
 
 ![example mesh](../images/blocks_02.png)
 
-# ds_grid
+## ds_grid
 
 This is a more advanced mesh used for Directional Solidification growth simulation consisting out of 8 blocks:
 
@@ -24,7 +24,7 @@ The geometry parameters are defined in *ds_points.py*, the mesh is generated wit
 
 ![example mesh](../images/gridstart_ds.png)
 
-# cz_grid
+## cz_grid
 
 This is a complex mesh used for Czochralski growth simulation consisting out of 27 blocks:
 
@@ -34,3 +34,8 @@ The geometry parameters are defined in *cz_points.py*, the mesh is generated wit
 
 ![example mesh](../images/gridstart_cz.png)
 
+## cz_2d
+
+This is a simple 2D mesh for Czochralski growth consisting of 7 blocks.
+
+![example mesh](../images/cz_2d.png)

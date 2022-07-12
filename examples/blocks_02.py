@@ -22,7 +22,7 @@ b1 = nb.Block(
     [1, 1, 1],
     [0, 1, 1],
 )
-b1.set_number_of_cell(10, 10, 10)
+b1.set_number_of_cells(10, 10, 10)
 b1.grading = f"simpleGrading (1 1 1)"  # This is the default. The string is directly written into the blockMeshDict.
 b1.create()  # this creates points & edges
 
@@ -42,7 +42,7 @@ b2 = nb.Block(mesh)  # raw block
 b2.set_connection(b1, "bottom")  # on top of b1
 # alternatively you could use the faces to set this connection
 # b2.face_bottom = b1.face_top
-# b2.set_number_of_cell(10, 10, 5) # in this case set all numbers of cells
+# b2.set_number_of_cells(10, 10, 5) # in this case set all numbers of cells
 
 # define missing points
 b2.p4 = [0, 0, 2]

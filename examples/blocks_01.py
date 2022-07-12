@@ -15,7 +15,7 @@ b1 = Block(
     [1, 1, 1],
     [0, 1, 1],
 )  # points p0 to p7 here
-b1.set_number_of_cell(10, 10, 10)
+b1.set_number_of_cells(10, 10, 10)
 b1.create()
 b1.e0.type = "spline"
 b1.e0.points.append([0.5, 0.3, 0])

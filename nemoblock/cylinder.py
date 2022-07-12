@@ -357,7 +357,7 @@ def create_cylinder(
             cartesian(radius_center_top, 180, p_top[1]),
             cartesian(radius_center_top, 270, p_top[1]),
         )
-    b.set_number_of_cell(res_center_r, res_center_r, res_z)
+    b.set_number_of_cells(res_center_r, res_center_r, res_z)
     b.create()
 
     # create ring around these blocks
@@ -423,13 +423,13 @@ def create_ring(
     b.face_left = faces_inside[0]
     if faces_outside != []:
         b.face_right = faces_outside[0]
-        b.set_number_of_cell(res_r, int(round(res_phi / 4)), res_z)
+        b.set_number_of_cells(res_r, int(round(res_phi / 4)), res_z)
         b.create()
     elif ring_below is not None:
         b.set_connection(ring_below.blocks[0], "bottom")
         b.p5 = cartesian(p_top[0], 0, p_top[1])
         b.p6 = cartesian(p_top[0], 90, p_top[1])
-        b.set_number_of_cell(res_r, int(round(res_phi / 4)), res_z)
+        b.set_number_of_cells(res_r, int(round(res_phi / 4)), res_z)
         b.create()
         b.e6.type = "arc"
         b.e6.points = [cartesian(p_top[0], 45, p_top[1])]
@@ -437,7 +437,7 @@ def create_ring(
         b.set_connection(ring_on_top.blocks[0], "top")
         b.p1 = cartesian(p_bt[0], 0, p_bt[1])
         b.p2 = cartesian(p_bt[0], 90, p_bt[1])
-        b.set_number_of_cell(res_r, int(round(res_phi / 4)), res_z)
+        b.set_number_of_cells(res_r, int(round(res_phi / 4)), res_z)
         b.create()
         b.e5.type = "arc"
         b.e5.points = [cartesian(p_bt[0], 45, p_bt[1])]
@@ -446,7 +446,7 @@ def create_ring(
         b.p2 = cartesian(p_bt[0], 90, p_bt[1])
         b.p5 = cartesian(p_top[0], 0, p_top[1])
         b.p6 = cartesian(p_top[0], 90, p_top[1])
-        b.set_number_of_cell(res_r, int(round(res_phi / 4)), res_z)
+        b.set_number_of_cells(res_r, int(round(res_phi / 4)), res_z)
         b.create()
         b.e5.type = "arc"
         b.e5.points = [cartesian(p_bt[0], 45, p_bt[1])]
@@ -461,26 +461,26 @@ def create_ring(
         b.face_front = blocks[i - 1].face_back
         if faces_outside != []:
             b.face_right = faces_outside[i]
-            b.set_number_of_cell(res_r, int(round(res_phi / 4)), res_z)
+            b.set_number_of_cells(res_r, int(round(res_phi / 4)), res_z)
             b.create()
         elif ring_below is not None:
             b.set_connection(ring_below.blocks[i], "bottom")
             b.p6 = cartesian(p_top[0], 90 * (i + 1), p_top[1])
-            b.set_number_of_cell(res_r, int(round(res_phi / 4)), res_z)
+            b.set_number_of_cells(res_r, int(round(res_phi / 4)), res_z)
             b.create()
             b.e6.type = "arc"
             b.e6.points = [cartesian(p_top[0], i * 90 + 45, p_top[1])]
         elif ring_on_top is not None:
             b.set_connection(ring_on_top.blocks[i], "top")
             b.p2 = cartesian(p_bt[0], 90 * (i + 1), p_bt[1])
-            b.set_number_of_cell(res_r, int(round(res_phi / 4)), res_z)
+            b.set_number_of_cells(res_r, int(round(res_phi / 4)), res_z)
             b.create()
             b.e5.type = "arc"
             b.e5.points = [cartesian(p_bt[0], i * 90 + 45, p_bt[1])]
         else:
             b.p2 = cartesian(p_bt[0], 90 * (i + 1), p_bt[1])
             b.p6 = cartesian(p_top[0], 90 * (i + 1), p_top[1])
-            b.set_number_of_cell(res_r, int(round(res_phi / 4)), res_z)
+            b.set_number_of_cells(res_r, int(round(res_phi / 4)), res_z)
             b.create()
             b.e5.type = "arc"
             b.e5.points = [cartesian(p_bt[0], i * 90 + 45, p_bt[1])]
@@ -492,7 +492,7 @@ def create_ring(
     b.face_left = faces_inside[-1]
     b.face_front = blocks[-1].face_back
     b.face_back = blocks[0].face_front
-    b.set_number_of_cell(res_r, int(round(res_phi / 4)), res_z)
+    b.set_number_of_cells(res_r, int(round(res_phi / 4)), res_z)
     b.create()
     if faces_outside != []:
         pass

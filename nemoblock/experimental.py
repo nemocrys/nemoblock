@@ -60,7 +60,7 @@ def create_cylinder(
         cartesian(radius_center_top, 90, z_top_mid),
         cartesian(0, 0, z_top_mid),
     )
-    b_0.set_number_of_cell(res_center_r, res_center_r, res_z)
+    b_0.set_number_of_cells(res_center_r, res_center_r, res_z)
     b_0.create()
 
     b_90 = Block(mesh)
@@ -179,7 +179,7 @@ def create_ring(mesh, r_top, r_bt, z_top, z_bt, faces_inside, res_r, res_phi, re
     b.p2 = cartesian(r_bt, 45, z_bt)
     b.p5 = cartesian(r_top, 0, z_top)
     b.p6 = cartesian(r_top, 45, z_top)
-    b.set_number_of_cell(res_r, int(res_phi / 8), res_z)
+    b.set_number_of_cells(res_r, int(res_phi / 8), res_z)
     b.create()
     b.e5.type = "arc"
     b.e5.points = [cartesian(r_bt, 45 / 2, z_bt)]
@@ -195,7 +195,7 @@ def create_ring(mesh, r_top, r_bt, z_top, z_bt, faces_inside, res_r, res_phi, re
         b.face_front = blocks[i - 1].face_back
         b.p2 = cartesian(r_bt, 45 * (i + 1), z_bt)
         b.p6 = cartesian(r_top, 45 * (i + 1), z_top)
-        b.set_number_of_cell(res_r, int(res_phi / 8), res_z)
+        b.set_number_of_cells(res_r, int(res_phi / 8), res_z)
         b.create()
         b.e5.type = "arc"
         b.e5.points = [cartesian(r_bt, i * 45 + 45 / 2, z_bt)]
@@ -207,7 +207,7 @@ def create_ring(mesh, r_top, r_bt, z_top, z_bt, faces_inside, res_r, res_phi, re
     b.face_left = faces_inside[-1]
     b.face_front = blocks[-1].face_back
     b.face_back = blocks[0].face_front
-    b.set_number_of_cell(res_r, int(res_phi / 8), res_z)
+    b.set_number_of_cells(res_r, int(res_phi / 8), res_z)
     b.create()
     b.e5.type = "arc"
     b.e5.points = [cartesian(r_bt, 360 - 45 / 2, z_bt)]

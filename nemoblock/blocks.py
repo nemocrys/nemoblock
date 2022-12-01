@@ -630,4 +630,6 @@ def boundary_layer(
     print("Elements outside:", n_el_out)
     print("Layer thickness:", layer_thickness)
     print("Larges Element:", largest_element)
+    if n_el_out <= 0 or n_el_bl <= 0:
+        raise ValueError("Impossible grading!")
     return n_el, grading

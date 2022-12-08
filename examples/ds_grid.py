@@ -122,6 +122,8 @@ if not one_mesh_only:
     mesh.write()
     if os.path.exists("./system/solid/blockMeshDict"):
         os.remove("./system/solid/blockMeshDict")
+    if not os.path.exists("./system/solid"):
+        os.makedirs("./system/solid")
     os.rename("./system/blockMeshDict", "./system/solid/blockMeshDict")
     mesh = Mesh()
 
@@ -227,4 +229,6 @@ mesh.write()
 if not one_mesh_only:
     if os.path.exists("./system/fluid/blockMeshDict"):
         os.remove("./system/fluid/blockMeshDict")
+    if not os.path.exists("./system/fluid"):
+        os.makedirs("./system/fluid")
     os.rename("./system/blockMeshDict", "./system/fluid/blockMeshDict")

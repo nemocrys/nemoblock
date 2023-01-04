@@ -201,6 +201,143 @@ class Block:
                 self._p7_coords[0], self._p7_coords[1], self._p7_coords[2]
             )
 
+        if type(self._p0) is str:
+            if self._p0 == "p1":
+                self._p0 = self._p1
+            elif self._p0 == "p2":
+                self._p0 = self._p2
+            elif self._p0 == "p3":
+                self._p0 = self._p3
+            elif self._p0 == "p4":
+                self._p0 = self._p4
+            elif self._p0 == "p5":
+                self._p0 = self._p5
+            elif self._p0 == "p6":
+                self._p0 = self._p6
+            elif self._p0 == "p7":
+                self._p0 = self._p7
+            else:
+                raise ValueError("invalid point definition")
+        if type(self._p1) is str:
+            if self._p1 == "p0":
+                self._p1 = self._p0
+            elif self._p1 == "p2":
+                self._p1 = self._p2
+            elif self._p1 == "p3":
+                self._p1 = self._p3
+            elif self._p1 == "p4":
+                self._p1 = self._p4
+            elif self._p1 == "p5":
+                self._p1 = self._p5
+            elif self._p1 == "p6":
+                self._p1 = self._p6
+            elif self._p1 == "p7":
+                self._p1 = self._p7
+            else:
+                raise ValueError("invalid point definition")
+        if type(self._p2) is str:
+            if self._p2 == "p0":
+                self._p2 = self._p0
+            elif self._p2 == "p1":
+                self._p2 = self._p1
+            elif self._p2 == "p3":
+                self._p2 = self._p3
+            elif self._p2 == "p4":
+                self._p2 = self._p4
+            elif self._p2 == "p5":
+                self._p2 = self._p5
+            elif self._p2 == "p6":
+                self._p2 = self._p6
+            elif self._p2 == "p7":
+                self._p2 = self._p7
+            else:
+                raise ValueError("invalid point definition")
+        if type(self._p3) is str:
+            if self._p3 == "p0":
+                self._p3 = self._p0
+            elif self._p3 == "p1":
+                self._p3 = self._p1
+            elif self._p3 == "p2":
+                self._p3 = self._p2
+            elif self._p3 == "p4":
+                self._p3 = self._p4
+            elif self._p3 == "p5":
+                self._p3 = self._p5
+            elif self._p3 == "p6":
+                self._p3 = self._p6
+            elif self._p3 == "p7":
+                self._p3 = self._p7
+            else:
+                raise ValueError("invalid point definition")
+        if type(self._p4) is str:
+            if self._p4 == "p0":
+                self._p4 = self._p0
+            elif self._p4 == "p1":
+                self._p4 = self._p1
+            elif self._p4 == "p2":
+                self._p4 = self._p2
+            elif self._p4 == "p3":
+                self._p4 = self._p3
+            elif self._p4 == "p5":
+                self._p4 = self._p5
+            elif self._p4 == "p6":
+                self._p4 = self._p6
+            elif self._p4 == "p7":
+                self._p4 = self._p7
+            else:
+                raise ValueError("invalid point definition")
+        if type(self._p5) is str:
+            if self._p5 == "p0":
+                self._p5 = self._p0
+            elif self._p5 == "p1":
+                self._p5 = self._p1
+            elif self._p5 == "p2":
+                self._p5 = self._p2
+            elif self._p5 == "p3":
+                self._p5 = self._p3
+            elif self._p5 == "p4":
+                self._p5 = self._p4
+            elif self._p5 == "p6":
+                self._p5 = self._p6
+            elif self._p5 == "p7":
+                self._p5 = self._p7
+            else:
+                raise ValueError("invalid point definition")
+        if type(self._p6) is str:
+            if self._p6 == "p0":
+                self._p6 = self._p0
+            elif self._p6 == "p1":
+                self._p6 = self._p1
+            elif self._p6 == "p2":
+                self._p6 = self._p2
+            elif self._p6 == "p3":
+                self._p6 = self._p3
+            elif self._p6 == "p4":
+                self._p6 = self._p4
+            elif self._p6 == "p5":
+                self._p6 = self._p5
+            elif self._p6 == "p7":
+                self._p6 = self._p7
+            else:
+                raise ValueError("invalid point definition")
+        if type(self._p7) is str:
+            if self._p7 == "p0":
+                self._p7 = self._p0
+            elif self._p7 == "p1":
+                self._p7 = self._p1
+            elif self._p7 == "p2":
+                self._p7 = self._p2
+            elif self._p7 == "p3":
+                self._p7 = self._p3
+            elif self._p7 == "p4":
+                self._p7 = self._p4
+            elif self._p7 == "p5":
+                self._p7 = self._p5
+            elif self._p7 == "p6":
+                self._p7 = self._p6
+            else:
+                raise ValueError("invalid point definition")
+
         if self.e0 is None:
             self.e0 = self.mesh._add_edge(self._p0, self._p1)
         if self.e1 is None:
@@ -363,6 +500,10 @@ class Block:
             raise RuntimeError("This point exists already.")
         if type(val) == Point:
             self._p0 = val
+        if type(val) == str:
+            if self._created:
+                raise ValueError("Cannot set reference to own point, block was already created")
+            self._p0 = val
         else:
             self._p0 = self.mesh._add_point(val[0], val[1], val[2])
 
@@ -375,6 +516,10 @@ class Block:
         if self._p1 is not None:
             raise RuntimeError("This point exists already.")
         if type(val) == Point:
+            self._p1 = val
+        elif type(val) == str:
+            if self._created:
+                raise ValueError("Cannot set reference to own point, block was already created")
             self._p1 = val
         else:
             self._p1 = self.mesh._add_point(val[0], val[1], val[2])
@@ -389,6 +534,10 @@ class Block:
             raise RuntimeError("This point exists already.")
         if type(val) == Point:
             self._p2 = val
+        elif type(val) == str:
+            if self._created:
+                raise ValueError("Cannot set reference to own point, block was already created")
+            self._p2 = val
         else:
             self._p2 = self.mesh._add_point(val[0], val[1], val[2])
 
@@ -401,6 +550,10 @@ class Block:
         if self._p3 is not None:
             raise RuntimeError("This point exists already.")
         if type(val) == Point:
+            self._p3 = val
+        elif type(val) == str:
+            if self._created:
+                raise ValueError("Cannot set reference to own point, block was already created")
             self._p3 = val
         else:
             self._p3 = self.mesh._add_point(val[0], val[1], val[2])
@@ -415,6 +568,10 @@ class Block:
             raise RuntimeError("This point exists already.")
         if type(val) == Point:
             self._p4 = val
+        elif type(val) == str:
+            if self._created:
+                raise ValueError("Cannot set reference to own point, block was already created")
+            self._p4 = val
         else:
             self._p4 = self.mesh._add_point(val[0], val[1], val[2])
 
@@ -427,6 +584,10 @@ class Block:
         if self._p5 is not None:
             raise RuntimeError("This point exists already.")
         if type(val) == Point:
+            self._p5 = val
+        elif type(val) == str:
+            if self._created:
+                raise ValueError("Cannot set reference to own point, block was already created")
             self._p5 = val
         else:
             self._p5 = self.mesh._add_point(val[0], val[1], val[2])
@@ -441,6 +602,10 @@ class Block:
             raise RuntimeError("This point exists already.")
         if type(val) == Point:
             self._p6 = val
+        elif type(val) == str:
+            if self._created:
+                raise ValueError("Cannot set reference to own point, block was already created")
+            self._p6 = val
         else:
             self._p6 = self.mesh._add_point(val[0], val[1], val[2])
 
@@ -453,6 +618,10 @@ class Block:
         if self._p7 is not None:
             raise RuntimeError("This point exists already.")
         if type(val) == Point:
+            self._p7 = val
+        elif type(val) == str:
+            if self._created:
+                raise ValueError("Cannot set reference to own point, block was already created")
             self._p7 = val
         else:
             self._p7 = self.mesh._add_point(val[0], val[1], val[2])

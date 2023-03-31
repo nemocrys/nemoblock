@@ -1,6 +1,7 @@
 # nemoblock
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7503822.svg)](https://doi.org/10.5281/zenodo.7503822)
 
 ## Project description
 
@@ -137,7 +138,7 @@ nemoblock is published under the [GPLv3 license](https://www.gnu.org/licenses/gp
 
 ## Acknowledgements
 
-[This project](https://www.researchgate.net/project/NEMOCRYS-Next-Generation-Multiphysical-Models-for-Crystal-Growth-Processes) has received funding from the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No 851768).
+[This project](https://nemocrys.github.io/) has received funding from the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No 851768).
 
 <img src="https://raw.githubusercontent.com/nemocrys/nemoblock/master/EU-ERC.png">
 

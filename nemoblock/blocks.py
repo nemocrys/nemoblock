@@ -33,10 +33,10 @@ class Mesh:
         self.block_count += 1
         self.blocks.append(block)
 
-    def write(self):
-        if not os.path.exists("./system"):
-            os.makedirs("./system")
-        with open("./system/blockMeshDict", "w") as f:
+    def write(self, directory="./system"):
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        with open(f"{directory}/blockMeshDict", "w") as f:
             # header
             f.writelines(
                 [
